@@ -22,6 +22,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 1. Copy everything from /pages except /pages/doc into result
       - name: Prepare result directory
         run: |
           mkdir -p result
@@ -29,12 +30,16 @@ jobs:
             --exclude 'doc/' \
             pages/ result/
 
-      - name: Build LaTeX documentation to HTML with make4ht
-        uses: docker://ghcr.io/michal-h21/make4ht-action:latest
-        env:
-          command: |
-            cd pages/doc && \
-            make4ht -u -d ../../result/doc main.tex
+      - name: Install TeX Live
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-full
+
+      - name: Build LaTeX documentation to HTML
+        working-directory: pages/doc
+        run: |
+          mkdir -p ../../result/doc
+          make4ht -u -d ../../result/doc main.tex
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
