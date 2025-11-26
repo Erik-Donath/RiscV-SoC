@@ -1,0 +1,59 @@
+name: Build docs and deploy to Pages
+
+on:
+  push:
+    paths:
+      - "pages/**"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare result directory
+        run: |
+          mkdir -p result
+          rsync -av --delete \
+            --exclude 'doc/' \
+            pages/ result/
+
+      - name: Install TeX Live and latex2html
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-full latex2html
+
+      - name: Build LaTeX documentation to HTML
+        working-directory: pages/doc
+        run: |
+          mkdir -p ../../result/doc
+          latex2html -dir ../../result/doc -html_version 4.0,latin1 main.tex
+          if [ -f ../../result/doc/main.html ]; then
+            mv ../../result/doc/main.html ../../result/doc/index.html
+          fi
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: result
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
