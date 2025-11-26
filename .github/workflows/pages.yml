@@ -29,16 +29,11 @@ jobs:
             --exclude 'doc/' \
             pages/ result/
 
-      - name: Install TeX Live and latex2html
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y texlive-full latex2html
-
-      - name: Build LaTeX documentation to HTML
+      - name: Build LaTeX documentation to HTML with make4ht
+        uses: docker://ghcr.io/michal-h21/make4ht-action:latest
         working-directory: pages/doc
-        run: |
-          mkdir -p ../../result/doc
-          latex2html -dir ../../result/doc -html_version 4.0,latin1 main.tex
+        env:
+          command: "make4ht -u -d ../../result/doc main.tex"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
