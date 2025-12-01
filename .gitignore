@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 
 /IDE
+/Programmer
 # C extensions
 *.so
 
