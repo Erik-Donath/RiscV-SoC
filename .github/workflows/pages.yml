@@ -1,0 +1,89 @@
+name: Pages
+
+on:
+  push:
+    paths:
+      - 'pages/**'
+      - 'docs/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build LaTeX docs
+        uses: xu-cheng/latex-action@v3
+        with:
+          working_directory: docs/
+          root_file: main.tex
+
+      - name: Prepare docs output
+        run: |
+          mkdir -p pages/static/docs
+          cp docs/main.pdf pages/static/docs/
+
+      - name: Upload docs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-docs
+          path: pages/static/docs
+
+  build-pages:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare pages output
+        run: |
+          mkdir -p pages/static/docs
+
+      - name: Upload pages artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-pages
+          path: pages
+
+  deploy:
+    needs: [build-docs, build-pages]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Download docs
+        uses: actions/download-artifact@v4
+        with:
+          name: built-docs
+          path: static/docs
+
+      - name: Download pages
+        uses: actions/download-artifact@v4
+        with:
+          name: built-pages
+          path: .
+
+      - name: Upload final Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

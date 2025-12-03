@@ -1,0 +1,191 @@
+% ------------------------------------------------------------------------
+% Bachelorarbeit_Vorlage.tex
+% Professionelle LaTeX-Vorlage für eine Bachelorarbeit (Deutsch)
+% - Titelseite (Deckblatt)
+% - Eigenerklärungen, Danksagung, Abstract (Deutsch/Englisch)
+% - Inhaltsverzeichnis, Abbildungsverzeichnis, Tabellenverzeichnis, Abkürzungsverzeichnis
+% - Kapitelstruktur + Anhang
+% - Literatur mit biblatex (biber)
+% ------------------------------------------------------------------------
+% Nutzung: TeXLive / MiKTeX
+% Empfohlen: pdflatex + biber + pdflatex pdflatex
+% Alternativ: xelatex + biber (wenn fontspec gewünscht wird)
+% ------------------------------------------------------------------------
+\documentclass[12pt,oneside]{scrreprt} % KOMA-Script; oneside oder twoside je nach Vorgabe
+
+% Sprache, Eingabe und Schriften
+\usepackage[utf8]{inputenc}        % UTF-8 Eingabe (für pdflatex)
+\usepackage[T1]{fontenc}           % Schriftkodierung
+\usepackage[ngerman,english]{babel} % Hauptsprache: ngerman
+\usepackage{lmodern}               % moderne Latin-Modern Schrift
+\usepackage{microtype}             % optische Verbesserungen
+
+% Seitenlayout
+\usepackage{geometry}
+\geometry{a4paper,outer=25mm,inner=25mm,top=30mm,bottom=30mm}
+\usepackage{setspace}
+\onehalfspacing % 1,5-zeilig — oft gefordert
+
+% Graphiken, Tabellen, Farben
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{booktabs}  % schöne Tabellen
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{xcolor}
+
+% Kopf-/Fußzeile
+\usepackage{scrlayer-scrpage}
+\clearpairofpagestyles
+\ihead{\headmark}
+\ofoot{\pagemark}
+\setkomafont{pageheadfoot}{\small}
+
+% Hyperlinks
+\usepackage[hidelinks]{hyperref}
+
+% math
+\usepackage{amsmath,amssymb,amsthm}
+
+% Zitate & Bibliographie
+\usepackage[backend=biber,style=authoryear,sortcites,maxcitenames=2,maxbibnames=99]{biblatex}
+\addbibresource{literatur.bib} % Datei literatur.bib anlegen
+
+% Abkürzungsverzeichnis
+\usepackage[printonlyused]{acronym}
+
+% Nützliches
+\usepackage{tocloft} % ToC-Anpassungen
+\setcounter{tocdepth}{2} % Tiefe des Inhaltsverzeichnisses
+\setcounter{secnumdepth}{3}
+
+% ------------------------------------------------------------------------
+% Titelseite anpassen
+% Ersetze Platzhalter (UNIVERSITAET, FACHBEREICH, STUDIERENDER, BETREUER, DATUM etc.)
+% Logo: lege logo.pdf oder logo.png in dasselbe Verzeichnis
+% ------------------------------------------------------------------------
+\begin{document}
+
+% -----------------------------
+% Deckblatt / Titelseite
+% -----------------------------
+\begin{titlepage}
+  \centering
+  \vspace*{1cm}
+  \includegraphics[height=3cm]{TLS_Logo.png}\\[1.5cm] % logo.png ersetzt durch Logo der Uni
+  {\LARGE \textsc{Theodor-Litt-Schule} \\}
+  \vspace{1.5cm}
+  {\Huge \bfseries Bau eines Risc-V32i CPU \\[0.5em] \MakeUppercase f\"ur den Sipeed-Tang-Nano 9K, mithilfe von Litex und migen \\}
+  \vspace{1.5cm}
+  {\Large vorgelegt von \\}
+  {\Large \textbf{Daniel Hohmann und Erik Donath} \\}
+  \vspace{0.8cm}
+  {\Large Fachbereich Praktische Informatik \\ Klasse: BG13PI \\ }
+  \vfill
+  {\large Lehrerin: Frau Engel \\}
+  \vspace{1cm}
+  {\large Abgabedatum: 1. Januar 2025 \\}
+\end{titlepage}
+
+% -----------------------------
+% Sperrvermerk / Eigenerklärung
+% -----------------------------
+\cleardoublepage
+\thispagestyle{empty}
+\section*{Eidesstattliche Erklärung}
+Hiermit versichere ich,\ dass ich die vorliegende Arbeit selbstständig verfasst und keine anderen als die angegebenen Hilfsmittel verwendet habe.\\[1em]
+Ort, Datum:\\[2em]
+Unterschrift:Nicht in Öffentlicher Version enthalten\hrulefill
+
+\newpage
+
+% -----------------------------
+% Danksagung (optional)
+% -----------------------------
+\section*{Danksagung}
+Vorab, wir möchten uns herzlich beim Team von LiteX und LiteX-Boards bedanken, die ihr geniales Projekt als Open-Source zur Verfügung gestellt haben. Durch ihre großartige Arbeit und die offene Bereitstellung dieser Ressourcen konnten wir auf eine solide und vielseitige Grundlage zurückgreifen, die unser Projekt maßgeblich unterstützt hat. Ebenso gilt unser Dank dem Blog JustAnotherElectronicsBlog, dessen exzellentes Anfänger-Tutorial uns eine fundamentale Basis vermittelte, die wir erfolgreich für unsere Arbeit nutzen konnten. Diese wertvollen Beiträge haben wesentlich zu unserem Fortschritt und Verständnis beigetragen.
+\cleardoublepage
+
+% -----------------------------
+% Abstract (Deutsch und Englisch)
+% -----------------------------
+\begin{abstract}
+\addcontentsline{toc}{chapter}{Kurzfassung}
+Kurzfassung auf Deutsch: kurze Beschreibung von Problemstellung, Methode, wichtigsten Ergebnissen und Schlussfolgerungen (max. 200–300 Wörter).
+\end{abstract}
+
+\begin{otherlanguage}{english}
+\begin{abstract}
+Abstract in English: short summary (200--300 words).
+\end{abstract}
+\end{otherlanguage}
+
+% -----------------------------
+% Inhaltsverzeichnis und Listen
+% -----------------------------
+\cleardoublepage
+\tableofcontents
+\cleardoublepage
+\listoffigures
+\cleardoublepage
+\listoftables
+\cleardoublepage
+
+% Abkürzungsverzeichnis
+\chapter*{Abkürzungsverzeichnis}
+\addcontentsline{toc}{chapter}{Abkürzungsverzeichnis}
+\begin{acronym}[UML]
+  \acro{PDF}{Portable Document Format}
+  \acro{HTML}{HyperText Markup Language}
+  % weitere Abkürzungen
+\end{acronym}
+
+\cleardoublepage
+
+% -----------------------------
+% Hauptteil (Beispielkapitel)
+% -----------------------------
+\chapter{Einleitung}
+\section{Motivation}
+Hier kommt die Einleitung \dots
+
+\section{Aufbau der Arbeit}
+Kurzbeschreibung der Kapitelstruktur
+
+\chapter{Theoretische Grundlagen}
+\section{Grundbegriffe}
+\dots
+
+\chapter{Methodik}
+\section{Datenerhebung}
+\section{Datenanalyse}
+
+\chapter{Ergebnisse}
+\section{Ergebnisdarstellung}
+\section{Interpretation}
+
+\chapter{Diskussion}
+Stärken, Schwächen, Limitationen
+
+\chapter{Fazit und Ausblick}
+Schlussfolgerungen und mögliche Weiterführungen
+
+% -----------------------------
+% Literaturverzeichnis
+% -----------------------------
+\cleardoublepage
+\printbibliography[heading=bibintoc]
+
+% -----------------------------
+% Anhang
+% -----------------------------
+\appendix
+\chapter{Appendix A: Fragebogen}
+Hier steht der Fragebogen oder ergänzende Tabellen.
+
+\chapter{Appendix B: Quellcode}
+Beispiel: Quellcode, Datenblätter etc.
+
+\end{document}
