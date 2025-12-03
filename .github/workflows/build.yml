@@ -1,0 +1,55 @@
+name: Manual FPGA Build
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      GOWIN_VERSION: "1.9.11.03"
+      GOWIN_DIR: IDE
+      BUILD_OUTPUT_DIR: build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache GOWIN IDE
+        id: cache-gowin
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.GOWIN_DIR }}
+          key: gowin-ide-${{ env.GOWIN_VERSION }}
+
+      - name: Download and install GOWIN IDE
+        if: steps.cache-gowin.outputs.cache-hit != 'true'
+        run: |
+          echo "Downloading GOWIN EDA Education ${GOWIN_VERSION}..."
+          GOWIN_TAR="Gowin_V${GOWIN_VERSION}_Education_Linux.tar.gz"
+          curl -L "https://cdn.gowinsemi.com.cn/${GOWIN_TAR}" -o "${GOWIN_TAR}"
+
+          mkdir -p "${GOWIN_DIR}"
+          tar -xzf "${GOWIN_TAR}"
+          rm "${GOWIN_TAR}"
+
+      - name: Show GOWIN directory contents (debug)
+        run: ls -R "${GOWIN_DIR}"
+
+      #- name: Build project with GOWIN
+      #  run: |
+      #    mkdir -p "${BUILD_OUTPUT_DIR}"
+
+      #    export GOWIN_HOME="${GOWIN_DIR}"
+      #    export PATH="${GOWIN_HOME}/bin:${PATH}"
+
+      #    chmod +x ./env.sh || true
+      #    source ./env.sh
+      #    python3 cpu.py --build
+
+      #- name: Upload build artifact
+      #  uses: actions/upload-artifact@v4
+      #  with:
+      #    name: fpga-build-${{ github.run_number }}
+      #    path: ${{ env.BUILD_OUTPUT_DIR }}
