@@ -44,10 +44,6 @@ jobs:
           tar -xzf "${GOWIN_TAR}"
           rm "${GOWIN_TAR}"
 
-      #- name: Show GOWIN directory contents (debug)
-      #  run: ls -R "${GOWIN_DIR}"
-
-      # Build or use Cached Docker
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -61,9 +57,14 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Run Docker build
+      - name: Run build inside container
         run: |
-          make run
+          mkdir -p "${BUILD_OUTPUT_DIR}"
+          docker run --rm \
+            -v "${PWD}:/workspace" \
+            -w /workspace \
+            "${IMAGE_NAME}:latest" \
+            bash -lc "python3 cpu.py --build"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4

@@ -5,7 +5,7 @@ ARG ENV=prod
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     yosys \
-    python3-pip python3-full build-essential wget curl git \
+    python3-pip python3-venv python3-full build-essential wget curl git \
     libevent-dev libjson-c-dev verilator ca-certificates tar meson ninja-build \
     cmake clang llvm python3-dev libboost-dev libboost-filesystem-dev libboost-thread-dev libboost-program-options-dev libboost-iostreams-dev libeigen3-dev \
     tcl-dev libreadline-dev libffi-dev bison flex pkg-config \
@@ -15,15 +15,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Stage 2: Python environment with LiteX installed
 FROM base AS python-lite
 
-# Install Python deps globally
-RUN pip3 install --upgrade pip setuptools wheel \
-    && pip3 install migen apycula --timeout 100 --retries 3
+# Create venv and use it explicitly
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:${PATH}"
+
+RUN /opt/venv/bin/pip install --upgrade pip setuptools wheel \
+    && /opt/venv/bin/pip install migen apycula --timeout 100 --retries 3
 
 WORKDIR /opt
 
 RUN wget https://raw.githubusercontent.com/enjoy-digital/litex/master/litex_setup.py \
     && chmod +x litex_setup.py \
-    && python3 litex_setup.py --init --install --config=standard \
+    && /opt/venv/bin/python litex_setup.py --init --install --config=standard \
     && rm litex_setup.py
 
 # Stage 3: RISC-V Toolchain
@@ -34,7 +37,7 @@ RUN curl -L https://static.dev.sifive.com/dev-tools/riscv64-unknown-elf-gcc-8.3.
     && tar -xf riscv64-unknown-elf-gcc.tar.gz -C /opt \
     && rm riscv64-unknown-elf-gcc.tar.gz
 
-ENV PATH="/opt/riscv64-unknown-elf-gcc-8.3.0-2019.08.0-x86_64-linux-ubuntu14/bin:$PATH"
+ENV PATH="/opt/riscv64-unknown-elf-gcc-8.3.0-2019.08.0-x86_64-linux-ubuntu14/bin:${PATH}"
 
 # Stage 4: nextpnr-himbaechel build and install
 FROM riscv-toolchain AS nextpnr
@@ -49,17 +52,16 @@ RUN git clone --recursive https://github.com/YosysHQ/nextpnr.git /opt/nextpnr \
 # Stage 5: Final image with Gowin Toolchain
 FROM nextpnr
 
+# Ensure we still use the venv Python at runtime
+ENV PATH="/opt/venv/bin:${PATH}"
+
 WORKDIR /workspace
 
 COPY IDE /workspace/IDE
 
-# Ensure GUI-less Qt
 ENV QT_QPA_PLATFORM=offscreen
-
-# Add local Gowin IDE binaries to PATH
 ENV PATH="/workspace/IDE/bin:${PATH}"
 
-# Make sure the Gowin binaries are executable
 RUN if [ -d "/workspace/IDE/bin" ]; then \
       echo "Setting execute permission on files in /workspace/IDE/bin" && \
       find "/workspace/IDE/bin" -maxdepth 1 -type f -exec chmod a+x '{}' \; 2>/dev/null || true; \
