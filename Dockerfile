@@ -44,7 +44,7 @@ RUN curl -L \
 # Expose full toolchain bin + per-triple bin
 ENV PATH="$PATH:/opt/riscv-tools/bin:/opt/riscv-tools/riscv64-unknown-elf/bin"
 
-# Create exact binaries LiteX/meson expect
+# Create exact binaries Meson/LiteX expect
 RUN ln -sf /opt/riscv-tools/bin/riscv64-unknown-elf-gcc      /usr/local/bin/riscv64-unknown-elf-gcc      && \
     ln -sf /opt/riscv-tools/bin/riscv64-unknown-elf-ar       /usr/local/bin/riscv64-unknown-elf-ar       && \
     ln -sf /opt/riscv-tools/bin/riscv64-unknown-elf-ranlib   /usr/local/bin/riscv64-unknown-elf-ranlib   && \
@@ -69,27 +69,16 @@ RUN git clone --recursive https://github.com/YosysHQ/nextpnr.git /opt/nextpnr \
  && make -j"$(nproc)" \
  && make install
 
-# Stage 5: Final runtime image with Gowin IDE
+# Stage 5: Final runtime image (IDE mounted at runtime)
 FROM nextpnr
 
 WORKDIR /workspace
 
-# Make IDE binaries executable
-RUN if [ -d "/workspace/IDE/bin" ]; then \
-      chmod -R a+rx /workspace/IDE/bin; \
-    fi
-
-# Headless Qt
+# Headless Qt (Gowin)
 ENV QT_QPA_PLATFORM=offscreen
-
-# Use system freetype and zlib to avoid FT_Done_MM_Var symbol issue
 ENV LD_PRELOAD="/lib/x86_64-linux-gnu/libfreetype.so.6:/usr/lib/x86_64-linux-gnu/libz.so"
 
-# venv + host + RISC-V tools + Gowin IDE bin
-ENV PATH="/opt/venv/bin:/opt/riscv-tools/bin:/opt/riscv-tools/riscv64-unknown-elf/bin:/workspace/IDE/bin:$PATH"
-
-RUN if [ -x "/workspace/IDE/bin/gw_sh" ]; then \
-      ln -sf /workspace/IDE/bin/gw_sh /usr/local/bin/gw_sh; \
-    fi
+# venv + RISC-V tools; IDE/bin will be added via PATH at runtime
+ENV PATH="/opt/venv/bin:/opt/riscv-tools/bin:/opt/riscv-tools/riscv64-unknown-elf/bin:$PATH"
 
 CMD ["/bin/bash"]

@@ -1,0 +1,30 @@
+name: Cleanup runner disk (on demand)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Show initial disk usage
+        run: df -h
+
+      - name: Lightweight cleanup (keep most caches)
+        run: |
+          set -eux
+          # Remove large SDKs and tools you do not use
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /opt/hostedtoolcache/CodeQL || true
+          # Clean APT metadata
+          sudo apt-get clean || true
+          sudo rm -rf /var/lib/apt/lists/* || true
+
+      - name: Show final disk usage
+        run: df -h

@@ -70,7 +70,6 @@ jobs:
             ${{ env.IMAGE_NAME }}:latest \
             bash -lc 'export PATH="/workspace/IDE/bin:$PATH"; /opt/venv/bin/python3 cpu.py --build'
 
-
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:

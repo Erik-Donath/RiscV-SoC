@@ -22,6 +22,7 @@ env: build
 		$(IMAGE_NAME) \
 		bash
 
+# Non-interactive build, same container shape as env
 run: build
 	docker run --rm -it \
 		-v "$(shell pwd)":/workspace \
@@ -29,9 +30,10 @@ run: build
 		--name $(CONTAINER_NAME) \
 		-e PYTHON=/opt/venv/bin/python3 \
 		-e GOWIN_HOME=/workspace/IDE \
+		-e QT_QPA_PLATFORM=offscreen \
+		-e LD_PRELOAD="/lib/x86_64-linux-gnu/libfreetype.so.6:/usr/lib/x86_64-linux-gnu/libz.so" \
 		$(IMAGE_NAME) \
-		bash -lc '/opt/venv/bin/python3 cpu.py --build'
-
+		bash -lc 'export PATH="/workspace/IDE/bin:$$PATH"; /opt/venv/bin/python3 cpu.py --build'
 
 clean:
 	docker rmi $(IMAGE_NAME) || true
