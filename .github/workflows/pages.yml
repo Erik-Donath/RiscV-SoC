@@ -28,7 +28,8 @@ jobs:
       - name: Build LaTeX docs
         uses: xu-cheng/latex-action@v3
         with:
-          root_file: docs/main.tex
+          work-in: docs/
+          root_file: main.tex
 
       - name: Prepare docs output
         run: |
