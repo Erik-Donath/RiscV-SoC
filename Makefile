@@ -24,7 +24,7 @@ env:
 
 run: build
 	docker run --rm -v "$(shell pwd)":/workspace --name $(CONTAINER_NAME) $(IMAGE_NAME) \
-		sh -lc 'source ./env.sh && python3 cpu.py --build'
+		sh -lc 'python3 cpu.py --build'
 
 
 clean:

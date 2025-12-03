@@ -55,5 +55,16 @@ ENV PATH="/workspace/IDE/bin:$PATH"
 
 WORKDIR /workspace
 
-CMD ["/bin/bash"]
+# Ensure GUI-less Qt
+ENV QT_QPA_PLATFORM=offscreen
 
+# Add local Gowin IDE binaries to PATH
+ENV PATH="/workspace/IDE/bin:${PATH}"
+
+# Make sure the Gowin binaries are executable
+RUN if [ -d "/workspace/IDE/bin" ]; then \
+      echo "Setting execute permission on files in /workspace/IDE/bin" && \
+      find "/workspace/IDE/bin" -maxdepth 1 -type f -exec chmod a+x '{}' \; 2>/dev/null || true; \
+    fi
+
+CMD ["/bin/bash"]

@@ -1,4 +1,4 @@
-name: Manual FPGA Build
+name: Build
 
 on:
   workflow_dispatch: {}
@@ -11,10 +11,16 @@ jobs:
       GOWIN_VERSION: "1.9.11.03"
       GOWIN_DIR: IDE
       BUILD_OUTPUT_DIR: build
+      IMAGE_NAME: riscv
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Check Docker availability
+        run: |
+          docker --version
+          docker info
 
       - name: Cache GOWIN IDE
         id: cache-gowin
@@ -37,7 +43,21 @@ jobs:
       #- name: Show GOWIN directory contents (debug)
       #  run: ls -R "${GOWIN_DIR}"
 
-      - name: Build
+      # Build or use Cached Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          tags: ${{ env.IMAGE_NAME }}:latest
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run Docker build
         run: |
           make run
 

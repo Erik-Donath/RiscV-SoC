@@ -5,6 +5,11 @@ Last Hope
 To use the Project and the build tools you need to download the gowin-eda from there website and place the `IDE` directory in the root of this project.
 
 ```bash
-source ./env.sh
-python3 cpu.py --build
+make run
+```
+
+Or:
+```bash
+make env
+Inside: python3 cpu.py --build
 ```
