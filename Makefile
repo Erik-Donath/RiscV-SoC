@@ -26,6 +26,5 @@ run: build
 	docker run --rm -v "$(shell pwd)":/workspace --name $(CONTAINER_NAME) $(IMAGE_NAME) \
 		sh -lc 'python3 cpu.py --build'
 
-
 clean:
 	docker rmi $(IMAGE_NAME)

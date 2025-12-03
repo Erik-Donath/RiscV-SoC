@@ -18,7 +18,7 @@ FROM base AS python-lite
 RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-RUN pip install --upgrade pip setuptools wheel apycula --timeout 100 --retries 3
+RUN pip install --upgrade pip setuptools wheel apycula migen --timeout 100 --retries 3
 
 WORKDIR /opt
 
