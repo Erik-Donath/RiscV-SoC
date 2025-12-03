@@ -5,7 +5,7 @@ ARG ENV=prod
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     yosys \
-    python3-pip python3-venv python3-full build-essential wget curl git \
+    python3-pip python3-full build-essential wget curl git \
     libevent-dev libjson-c-dev verilator ca-certificates tar meson ninja-build \
     cmake clang llvm python3-dev libboost-dev libboost-filesystem-dev libboost-thread-dev libboost-program-options-dev libboost-iostreams-dev libeigen3-dev \
     tcl-dev libreadline-dev libffi-dev bison flex pkg-config \
@@ -15,16 +15,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Stage 2: Python environment with LiteX installed
 FROM base AS python-lite
 
-RUN python3 -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-
-RUN pip install --upgrade pip setuptools wheel apycula migen --timeout 100 --retries 3
+# Install Python deps globally
+RUN pip3 install --upgrade pip setuptools wheel \
+    && pip3 install migen apycula --timeout 100 --retries 3
 
 WORKDIR /opt
 
 RUN wget https://raw.githubusercontent.com/enjoy-digital/litex/master/litex_setup.py \
     && chmod +x litex_setup.py \
-    && ./litex_setup.py --init --install --config=standard \
+    && python3 litex_setup.py --init --install --config=standard \
     && rm litex_setup.py
 
 # Stage 3: RISC-V Toolchain
@@ -47,13 +46,12 @@ RUN git clone --recursive https://github.com/YosysHQ/nextpnr.git /opt/nextpnr \
     && make -j"$(nproc)" \
     && make install
 
-# Stage 5: Add Gowin Toolchain (Assuming you copy it into the image)
-
-COPY IDE /workspace/IDE
-
-ENV PATH="/workspace/IDE/bin:$PATH"
+# Stage 5: Final image with Gowin Toolchain
+FROM nextpnr
 
 WORKDIR /workspace
+
+COPY IDE /workspace/IDE
 
 # Ensure GUI-less Qt
 ENV QT_QPA_PLATFORM=offscreen
