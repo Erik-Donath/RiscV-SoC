@@ -52,19 +52,19 @@ jobs:
           tar -xzf "$GOWIN_TAR"
           rm "$GOWIN_TAR"
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      #- name: Set up Docker Buildx
+      #  uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          tags: ${{ env.IMAGE_NAME }}:latest
-          push: false
-          load: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      #- name: Build Docker image
+      #  uses: docker/build-push-action@v6
+      #  with:
+      #    context: .
+      #    file: ./Dockerfile
+      #    tags: ${{ env.IMAGE_NAME }}:latest
+      #    push: false
+      #    load: true
+      #    cache-from: type=gha
+      #    cache-to: type=gha,mode=max
 
       - name: Run build inside container
         env:
