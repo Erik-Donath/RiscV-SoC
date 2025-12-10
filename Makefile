@@ -77,7 +77,7 @@ shell: docker-build
 terminal:
 	@echo "Opening serial terminal on /dev/ttyUSB1..."
 	@echo "Press Ctrl+A then Ctrl+X to exit picocom"
-	@picocom -b 115200 /dev/ttyUSB1 || screen /dev/ttyUSB1 115200
+	@picocom -b 115200 /dev/ttyUSB1
 
 clean:
 	rm -rf build/
