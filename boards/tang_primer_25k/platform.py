@@ -22,8 +22,8 @@ _io = [
         Subsignal("hold", Pins("E4"), IOStandard("LVCMOS33")),
     ),
     ("spiflashx4", 0,
-        Subsignal("cs_n", Pins("E6"),          IOStandard("LVCMOS33")),
-        Subsignal("clk",  Pins("E7"),          IOStandard("LVCMOS33")),
+        Subsignal("cs_n", Pins("E6"), IOStandard("LVCMOS33")),
+        Subsignal("clk",  Pins("E7"), IOStandard("LVCMOS33")),
         Subsignal("dq",   Pins("D6 E5 D5 E4"), IOStandard("LVCMOS33")),
     ),
 ]
@@ -121,7 +121,8 @@ _dock_connectors = [
     }),
 ]
 
-# SDRAMs -------------------------------------------------------------------------------------------
+# SDRAMs ----------------------------------------------------------------------
+
 
 def misterSDRAM(conn="j3"):
     """MiSTer SDR SDRAM module on connector `conn`."""
@@ -177,13 +178,15 @@ def sipeedSDRAM(conn="j3"):
         ),
     ]
 
+
 # Platform -------------------------------------------------------------------
+
 
 class TangPrimer25KPlatform(GowinPlatform):
     """Sipeed Tang Primer 25K FPGA Platform."""
 
     default_clk_name   = "clk50"
-    default_clk_period = 1e9/50e6
+    default_clk_period = 1e9 / 50e6
 
     def __init__(self, toolchain="gowin"):
         GowinPlatform.__init__(
@@ -194,17 +197,18 @@ class TangPrimer25KPlatform(GowinPlatform):
             toolchain=toolchain,
             devicename="GW5A-25A"
         )
+
         # Dock IO/connector extensions.
         self.add_extension(_dock_io)
         self.add_connector(_dock_connectors)
 
         # Toolchain options from original Platform.
-        self.toolchain.options["use_mspi_as_gpio"]  = 1  # spi flash
-        self.toolchain.options["use_i2c_as_gpio"]   = 1  # SDRAM / J3
-        self.toolchain.options["use_ready_as_gpio"] = 1  # led
-        self.toolchain.options["use_done_as_gpio"]  = 1  # led
-        self.toolchain.options["use_cpu_as_gpio"]   = 1  # clk
-        self.toolchain.options["rw_check_on_ram"]   = 1
+        self.toolchain.options["use_mspi_as_gpio"]   = 1  # spi flash
+        self.toolchain.options["use_i2c_as_gpio"]    = 1  # SDRAM / J3
+        self.toolchain.options["use_ready_as_gpio"]  = 1  # led
+        self.toolchain.options["use_done_as_gpio"]   = 1  # led
+        self.toolchain.options["use_cpu_as_gpio"]    = 1  # clk
+        self.toolchain.options["rw_check_on_ram"]    = 1
 
     def create_programmer(self, kit="openfpgaloader"):
         return OpenFPGALoader(cable="ft2232")
@@ -213,5 +217,5 @@ class TangPrimer25KPlatform(GowinPlatform):
         GowinPlatform.do_finalize(self, fragment)
         self.add_period_constraint(
             self.lookup_request("clk50", loose=True),
-            1e9/50e6,
+            1e9 / 50e6
         )

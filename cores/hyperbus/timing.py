@@ -1,84 +1,86 @@
 """HyperBus Timing Sequence Generator"""
 
-from migen import Signal
+from migen import Signal, Cat
 
 
 class HyperBusTiming:
     """
-    HyperBus Timing Sequence Generator
-    
+    HyperBus Timing Sequence Generator.
+
     Generates the delta-time sequence for HyperRAM access:
-    1. Command-Address phase (6 clocks)
-    2. Latency phase (configurable)
-    3. Data phase (read/write)
-    4. End and acknowledge
+      1. Command-Address phase.
+      2. Latency phase (configurable).
+      3. Data phase (read/write).
+      4. End and acknowledge.
     """
-    
+
     def __init__(self, latency, data_width):
         """
-        Initialize timing generator
-        
+        Initialize timing generator.
+
         Args:
-            latency: Number of latency cycles
-            data_width: Data width (8 or 16)
+            latency: Number of latency cycles (HyperRAM cycles).
+            data_width: Data width (8 or 16).
         """
         self.latency = latency
         self.data_width = data_width
-        
-        # Calculate latency in sys_clk cycles
-        # Latency starts from middle of CA phase (-4)
-        # Fixed latency mode: 2 * latency cycles
-        # 4 sys_clks per RAM clock
+        # Latency in sys_clk cycles:
+        # - Fixed latency mode: 2 * latency HyperRAM cycles.
+        # - 4 sys_clk per HyperRAM clock.
+        # - Start counted from middle of CA phase (-4).
         self.latency_cycles = (latency * 8) - 4
-    
+
     def build_sequence(self, cs, ca, ca_active, dq, rwds, sr, bus):
         """
-        Build complete access sequence
-        
+        Build complete access sequence.
+
         Returns:
-            List of (delta_time, actions) tuples
+            List of (delta_time, actions) tuples suitable for migen.timeline.
         """
         rwds_out = Signal(2)
-        # Fix: rwds is a module, not a signal - need to use comb from parent
-        # This will be handled by the parent module
-        
+
         sequence = [
-            # Initial delay
+            # Initial delay.
             (3, []),
-            
-            # Command-Address phase
+
+            # Command-Address phase.
             (12, [
                 cs.eq(1),
                 dq.oe.eq(1),
                 sr.eq(ca),
                 ca_active.eq(1)
             ]),
-            
-            # Latency
+
+            # Latency.
             (self.latency_cycles, [
                 dq.oe.eq(0),
                 ca_active.eq(0)
             ]),
         ]
-        
-        # Data phase
+
+        # Data phase.
         if self.data_width == 8:
             sequence.extend(self._data_phase_8bit(dq, rwds, rwds_out, sr, bus))
         else:
             sequence.extend(self._data_phase_16bit(dq, rwds, rwds_out, sr, bus))
-        
-        # End sequence
+
+        # End sequence.
         sequence.extend([
             (2, [cs.eq(0), rwds.oe.eq(0), dq.oe.eq(0)]),
             (1, [bus.ack.eq(1)]),
             (1, [bus.ack.eq(0)]),
             (0, [])
         ])
-        
+
         return sequence
-    
+
     def _data_phase_8bit(self, dq, rwds, rwds_out, sr, bus):
-        """Data phase for 8-bit mode"""
+        """Data phase for 8-bit mode."""
+        sel3 = ~bus.sel[3]
+        sel2 = ~bus.sel[2]
+        sel1 = ~bus.sel[1]
+        sel0 = ~bus.sel[0]
+
         return [
             (2, [
                 dq.oe.eq(bus.we),
@@ -86,15 +88,15 @@ class HyperBusTiming:
                 sr[16:].eq(bus.dat_w),
                 rwds.oe.eq(bus.we),
                 rwds.o.eq(rwds_out),
-                rwds_out.eq((~bus.sel[3]).replicate(2))
+                rwds_out.eq(Cat(sel3, sel3))
             ]),
-            (2, [rwds_out.eq((~bus.sel[2]).replicate(2))]),
-            (2, [rwds_out.eq((~bus.sel[1]).replicate(2))]),
-            (2, [rwds_out.eq((~bus.sel[0]).replicate(2))]),
+            (2, [rwds_out.eq(Cat(sel2, sel2))]),
+            (2, [rwds_out.eq(Cat(sel1, sel1))]),
+            (2, [rwds_out.eq(Cat(sel0, sel0))])
         ]
-    
+
     def _data_phase_16bit(self, dq, rwds, rwds_out, sr, bus):
-        """Data phase for 16-bit mode"""
+        """Data phase for 16-bit mode."""
         return [
             (2, [
                 dq.oe.eq(bus.we),
