@@ -93,14 +93,7 @@ _io = [
     ),
 
     # GPIO expansion (J6 / J7)
-    ("gpio", 0, Pins("25"), IOStandard("LVCMOS33")),
-    ("gpio", 1, Pins("26"), IOStandard("LVCMOS33")),
-    ("gpio", 2, Pins("27"), IOStandard("LVCMOS33")),
-    ("gpio", 3, Pins("28"), IOStandard("LVCMOS33")),
-    ("gpio", 4, Pins("29"), IOStandard("LVCMOS33")),
-    ("gpio", 5, Pins("30"), IOStandard("LVCMOS33")),
-    ("gpio", 6, Pins("33"), IOStandard("LVCMOS33")),
-    ("gpio", 7, Pins("34"), IOStandard("LVCMOS33")),
+    ("gpio", 0, Pins("25 26 27 28 29 30 33 34"), IOStandard("LVCMOS33")),
 
     # PWM (J6)
     ("pwm0", 0, Pins("51"), IOStandard("LVCMOS33")),
