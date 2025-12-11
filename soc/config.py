@@ -47,8 +47,8 @@ class SoCConfig:
     with_timer: bool = True
     with_gpio: bool = True
     with_i2c: bool = True
-    with_spi: bool = False
-    with_pwm: bool = False
+    with_spi: bool = True
+    with_pwm: bool = True
     
     # Build configuration
     build_name: str = "soc"
