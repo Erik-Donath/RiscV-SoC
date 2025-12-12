@@ -28,3 +28,6 @@ make terminal # to connect to the FPGA (USB UART Port)
 - `firmware/` – Baremetal and BIOS firmware targets
 - `docs/` – Documentation sources (LaTeX, images)
 - `pages/` - Github Pages site
+
+# Sources for RTOS
+- [https://github.com/litex-hub/zephyr-on-litex-vexriscv](https://github.com/litex-hub/zephyr-on-litex-vexriscv)
