@@ -11,6 +11,7 @@ The project includes board support, basic peripherals, and a simple build flow u
 - Gowin EDA (Education Edition)
 - A supported Gowin FPGA board (with USB‑UART)
 - Python 3 and standard build tools (`make`, `git`, etc.)
+- picocom on the host computer
 
 To enable synthesis and bitstream generation, copy the `IDE` directory from your Gowin EDA installation into the root of this repository.
 
