@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1-mesa-glx libx11-6 libxext6 libxrender1 libxtst6 libxcomposite1 \
     libxdamage1 libxrandr2 libxkbcommon0 libdbus-1-3 libglib2.0-0 libnss3 \
     zlib1g libasound2 libfontconfig1 \
+    # Development Tools
+    openfpgaloader picocom \
     # APT cleanup
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*

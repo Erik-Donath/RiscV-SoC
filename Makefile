@@ -82,9 +82,16 @@ shell: docker-build
 		bash
 
 terminal:
-	@echo "Opening serial terminal on /dev/ttyUSB1..."
-	@echo "Press Ctrl+A then Ctrl+X to exit picocom"
-	@picocom -b 115200 /dev/ttyUSB1
+	docker run $(DOCKER_FLAGS) \
+		-v "$(WORKSPACE)":/workspace \
+		-w /workspace \
+		--privileged \
+		--device=/dev/bus/usb \
+		-e GOWIN_HOME=/workspace/IDE \
+		-e QT_QPA_PLATFORM=offscreen \
+		-e LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libfreetype.so.6" \
+		$(DOCKER_IMAGE) \
+		bash -c 'export PATH="/workspace/IDE/bin:$$PATH"; echo "Press Ctrl+A then Ctrl+X to exit picocom"; picocom -b 115200 /dev/ttyUSB1'
 
 clean:
 	rm -rf build/
