@@ -51,6 +51,7 @@ RUN python3 -m venv /opt/venv && \
     . /opt/venv/bin/activate && \
     pip install --no-cache-dir --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -r /tmp/requirements.txt && \
+    pip install --no-cache-dir /opt/litex && \
     rm /tmp/requirements.txt
 
 FROM python-env AS runtime
