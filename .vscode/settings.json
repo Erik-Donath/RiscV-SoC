@@ -1,0 +1,9 @@
+{
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/litex"
+    ],
+    "python.autoComplete.extraPaths": [
+        "${workspaceFolder}/litex"
+    ],
+    "python.analysis.diagnosticMode": "workspace"
+}

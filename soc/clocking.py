@@ -1,4 +1,4 @@
-from migen import Signal, ClockDomain
+from migen import *
 from litex.gen import LiteXModule
 from litex.soc.cores.clock.gowin_gw1n import GW1NPLL
 

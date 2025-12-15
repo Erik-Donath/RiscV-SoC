@@ -1,3 +1,31 @@
+# Build artifacts
 build/
-.git
-*.log
+*.pyc
+__pycache__/
+*.egg-info/
+dist/
+
+# IDE and local configs
+.vscode/
+.idea/
+.venv/
+
+# Git
+.git/
+
+# Documentation
+docs/
+pages/
+README.md
+LICENSE
+SECURITY.md
+
+# Makefile and other configs
+Makefile
+.gitignore
+.gitmodules
+
+# Keep only what we need for the build
+*
+!litex/
+!docker/
