@@ -1,0 +1,3 @@
+[submodule "litex"]
+	path = litex
+	url = https://github.com/enjoy-digital/litex.git
