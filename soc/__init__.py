@@ -8,8 +8,7 @@ from .base import BaseSoC
 from .builder import build_soc
 
 __all__ = [
-    "SoCConfig",
-    "FirmwareTarget", 
+    "SoCConfig", 
     "BaseSoC",
     "build_soc"
 ]

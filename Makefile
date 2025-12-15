@@ -1,5 +1,5 @@
 BOARD ?= tang_nano_9k
-FIRMWARE ?= bios
+NO_EXTERNAL_RAM ?= 0
 DOCKER_IMAGE := mutau-soc
 WORKSPACE := $(shell pwd)
 KERNEL ?= "/path/to/kernel"
@@ -14,6 +14,13 @@ else
 endif
 
 USB_DOCKER_FLAGS := --privileged -v /dev:/dev
+
+# Build flags based on configuration
+ifeq ($(NO_EXTERNAL_RAM),1)
+    BUILD_FLAGS := --no-external-ram
+else
+    BUILD_FLAGS :=
+endif
 
 .PHONY: help setup docker-build build flash load shell terminal upload clean
 
@@ -35,7 +42,7 @@ help:
 	@echo ""
 	@echo "Variables:"
 	@echo "  BOARD=$(BOARD)"
-	@echo "  FIRMWARE=$(FIRMWARE)"
+	@echo "  NO_EXTERNAL_RAM=$(NO_EXTERNAL_RAM) (0=use external RAM, 1=SRAM only)"
 	@echo "  KERNEL=$(KERNEL)"
 	@echo "  PORT=$(PORT)"
 
@@ -53,7 +60,7 @@ build: docker-build
 		-e QT_QPA_PLATFORM=offscreen \
 		-e LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libfreetype.so.6" \
 		$(DOCKER_IMAGE) \
-		bash -c 'export PATH="/workspace/IDE/bin:$$PATH" && python3 -m soc.builder --board $(BOARD) --firmware $(FIRMWARE) --build'
+		bash -c 'export PATH="/workspace/IDE/bin:$$PATH" && python3 -m soc.builder --board $(BOARD) $(BUILD_FLAGS) --build'
 
 flash: docker-build
 	docker run $(DOCKER_FLAGS) \

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 SoC Builder Script
+
 Main entry point for building the SoC
 """
 
@@ -10,9 +11,8 @@ from pathlib import Path
 
 from litex.soc.integration.builder import Builder
 
-from .config import SoCConfig, FirmwareTarget
+from .config import SoCConfig
 from .base import BaseSoC
-
 
 def build_soc(config: SoCConfig, build=False, flash=False, load=False):
     """
@@ -56,7 +56,6 @@ def build_soc(config: SoCConfig, build=False, flash=False, load=False):
         # Flash BIOS
         bios = builder.get_bios_filename()
         prog.flash(0x40000, bios, external=True)
-        
         print("Flash complete!")
     
     # Load to SRAM if requested
@@ -68,7 +67,6 @@ def build_soc(config: SoCConfig, build=False, flash=False, load=False):
         print("Load complete!")
     
     return builder
-
 
 def main():
     """Main entry point"""
@@ -83,12 +81,11 @@ def main():
         help="Target board (default: tang_nano_9k)"
     )
     
-    # Firmware target
+    # Memory configuration
     parser.add_argument(
-        "--firmware",
-        choices=["bios", "barebone", "freertos", "linux"],
-        default="bios",
-        help="Firmware target (default: bios)"
+        "--no-external-ram",
+        action="store_true",
+        help="Disable external RAM (use SRAM only)"
     )
     
     # Actions
@@ -104,9 +101,8 @@ def main():
     # Create configuration
     config = SoCConfig(
         board_name=args.board,
-        firmware_target=FirmwareTarget(args.firmware),
         sys_clk_freq=args.sys_clk_freq,
-        with_external_ram=True
+        with_external_ram=not args.no_external_ram
     )
     
     # Build SoC
@@ -116,7 +112,6 @@ def main():
         flash=args.flash,
         load=args.load
     )
-
 
 if __name__ == "__main__":
     main()
