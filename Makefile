@@ -2,7 +2,10 @@ BOARD ?= tang_nano_9k
 FIRMWARE ?= bios
 DOCKER_IMAGE := mutau-soc
 WORKSPACE := $(shell pwd)
-KERNEL ?= "invalid kernel"
+KERNEL ?= "/path/to/kernel"
+
+# Default serial port inside container (host /dev is bind-mounted)
+PORT ?= /dev/ttyUSB1
 
 ifdef CI
     DOCKER_FLAGS := --rm
@@ -34,6 +37,7 @@ help:
 	@echo "  BOARD=$(BOARD)"
 	@echo "  FIRMWARE=$(FIRMWARE)"
 	@echo "  KERNEL=$(KERNEL)"
+	@echo "  PORT=$(PORT)"
 
 setup:
 	git submodule update --init --recursive
@@ -83,13 +87,13 @@ shell: docker-build
 		$(DOCKER_IMAGE) \
 		bash
 
-terminal:
+terminal: docker-build
 	docker run $(DOCKER_FLAGS) \
 		-v "$(WORKSPACE)":/workspace \
 		-w /workspace \
 		$(USB_DOCKER_FLAGS) \
 		$(DOCKER_IMAGE) \
-		bash -c 'echo "Press Ctrl+A then Ctrl+X to exit" && picocom -b 115200 /dev/ttyUSB1'
+		bash -c 'echo "Press Ctrl+A then Ctrl+X to exit" && picocom -b 115200 $(PORT)'
 
 upload: docker-build
 	docker run $(DOCKER_FLAGS) \
@@ -97,7 +101,7 @@ upload: docker-build
 		-w /workspace \
 		$(USB_DOCKER_FLAGS) \
 		$(DOCKER_IMAGE) \
-		litex_term --kernel $(KERNEL)
+		litex_term $(PORT) --kernel $(KERNEL)
 
 clean:
 	rm -rf build/
