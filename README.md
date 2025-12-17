@@ -6,6 +6,9 @@
 
 A small, modular RISC‑V System‑on‑Chip built with [LiteX](https://github.com/enjoy-digital/litex) for the Tang Nano 9K.  
 
+# Experimental-Branch
+This is an experimental branch, that branchs off from muTau-SoC, required to fulfill the dependencies set by Zephyr-RTOS. The RTOS of the SoC can be found in [muTau-Zephyr](https://github.com/Erik-Donath/muTau-Zephyr)
+
 ## Prerequisites
 - Docker and Make
 - Gowin EDA [Education Edition](https://www.gowinsemi.com/en/support/download_eda/)
