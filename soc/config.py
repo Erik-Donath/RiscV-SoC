@@ -42,6 +42,7 @@ class SoCConfig:
     want_i2c: bool = True
     want_spi: bool = True
     want_pwm: bool = True
+    want_spidcard: bool = True
     
     # Build configuration
     build_name: str = "soc"

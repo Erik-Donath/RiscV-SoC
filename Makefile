@@ -68,7 +68,7 @@ build: docker-build
 		-e QT_QPA_PLATFORM=offscreen \
 		-e LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libfreetype.so.6" \
 		$(DOCKER_IMAGE) \
-		bash -c 'export PATH="/workspace/IDE/bin:$$PATH" && python3 -m soc.builder --board $(BOARD) $(BUILD_FLAGS) --build'
+		bash -c 'export PATH="/workspace/IDE/bin:$$PATH" && python3 -m soc.builder --board $(BOARD) $(BUILD_FLAGS) --build' 
 
 flash: docker-build
 	docker run $(DOCKER_FLAGS) \

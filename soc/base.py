@@ -56,6 +56,6 @@ class BaseSoC(SoCCore):
         # Add main memory (board decides how / if external RAM is used)
         if not self.integrated_main_ram_size and config.with_external_ram:
             board.add_main_memory(self, platform, config)
-
+        
         # Add all board-specific peripherals (board decides what it can provide)
         board.add_peripherals(self, platform, config)

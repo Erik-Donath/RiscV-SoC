@@ -92,7 +92,7 @@ def main():
     parser.add_argument("--build", action="store_true", help="Build bitstream")
     parser.add_argument("--flash", action="store_true", help="Flash to board")
     parser.add_argument("--load", action="store_true", help="Load to SRAM")
-    
+
     # Configuration
     parser.add_argument("--sys-clk-freq", type=float, default=27e6, help="System clock frequency")
     
