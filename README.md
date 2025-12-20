@@ -1,10 +1,13 @@
-# RiscV-SoC
+# muTau-RiscV-SoC
 
 [![CodeQL](https://github.com/Erik-Donath/RiscV-SoC/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/Erik-Donath/RiscV-SoC/actions/workflows/github-code-scanning/codeql)
 [![Build](https://github.com/Erik-Donath/RiscV-SoC/actions/workflows/build.yml/badge.svg)](https://github.com/Erik-Donath/RiscV-SoC/actions/workflows/build.yml)
 [![Pages](https://github.com/Erik-Donath/RiscV-SoC/actions/workflows/pages.yml/badge.svg)](https://github.com/Erik-Donath/RiscV-SoC/actions/workflows/pages.yml)
 
 A small, modular RISC‑V System‑on‑Chip built with [LiteX](https://github.com/enjoy-digital/litex) for the Tang Nano 9K.  
+
+## Website and Dokumentation
+Visit [https://erik-donath.github.io/muTau-RV32-SoC/](https://erik-donath.github.io/muTau-RV32-SoC/) to learn more about this project.
 
 ## Prerequisites
 - Docker and Make
