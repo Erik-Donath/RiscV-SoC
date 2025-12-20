@@ -222,6 +222,11 @@ nav.scrolled {
     margin-bottom: 1rem;
     color: var(--primary);
 }
+.feature-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--accent);
+}
 .feature-card p {
     opacity: .8;
     line-height: 1.6;
