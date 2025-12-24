@@ -68,8 +68,18 @@ build: docker-build
 		-e QT_QPA_PLATFORM=offscreen \
 		-e LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libfreetype.so.6" \
 		$(DOCKER_IMAGE) \
-		bash -c 'export PATH="/workspace/IDE/bin:$$PATH" && python3 -m soc.builder --board $(BOARD) $(BUILD_FLAGS) --build' 
+		bash -c 'export PATH="/workspace/IDE/bin:$$PATH" && python3 -m soc.builder --board $(BOARD) $(BUILD_FLAGS) --build'
 
+dev-env: docker-build
+	docker run $(DOCKER_FLAGS) \
+	-v "$(WORKSPACE)":/workspace \
+	-w /workspace \
+	$(USB_DOCKER_FLAGS) \
+	-e GOWIN_HOME=/workspace/IDE \
+	-e QT_QPA_PLATFORM=offscreen \
+	-e LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libfreetype.so.6" \
+	$(DOCKER_IMAGE) 
+	
 flash: docker-build
 	docker run $(DOCKER_FLAGS) \
 		-v "$(WORKSPACE)":/workspace \
