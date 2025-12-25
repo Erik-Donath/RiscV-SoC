@@ -63,6 +63,6 @@ def add_peripherals(soc, platform, config):
         soc.pwm1 = GPIOOut(pads=platform.request("pwm1"))
     
     # SPID Card
-    if getattr(config, "want_spi", False):
-        soc.add_spi_flash(mode="1x", module=W25Q32(Codes.READ_1_1_1), with_master=False)
-        soc.add_spi_sdcard()
+    #if getattr(config, "want_spi", False):
+    #    soc.add_spi_flash(mode="1x", module=W25Q32(Codes.READ_1_1_1), with_master=False)
+    #    soc.add_spi_sdcard()
