@@ -102,7 +102,8 @@ def main():
     config = SoCConfig(
         board_name=args.board,
         sys_clk_freq=args.sys_clk_freq,
-        with_external_ram=not args.no_external_ram
+        with_external_ram=not args.no_external_ram,
+        want_fft=True,
     )
     
     # Build SoC

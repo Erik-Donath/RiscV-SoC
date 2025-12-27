@@ -42,6 +42,16 @@ class SoCConfig:
     want_i2c: bool = True
     want_spi: bool = True
     want_pwm: bool = True
+
+    # experimental fft
+    want_fft: bool = False
+    fft_n: int = 32
+    fft_width_i: int = 16
+    fft_width_o: int = 16
+    fft_width_int: int = 16
+    fft_width_wram: int = 16
+    fft_ifft: bool = False
+    fft_input_bitreversed: bool = False
     
     # Build configuration
     build_name: str = "soc"

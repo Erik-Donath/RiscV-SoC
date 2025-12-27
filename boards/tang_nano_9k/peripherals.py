@@ -5,6 +5,8 @@ from litex.soc.cores.gpio import GPIOOut, GPIOIn, GPIOTristate
 from litex.soc.cores.spi import SPIMaster
 from litex.soc.cores.bitbang import I2CMaster
 
+from .fft_core import FFTCore
+
 
 def add_peripherals(soc, platform, config):
     """
@@ -66,3 +68,16 @@ def add_peripherals(soc, platform, config):
     #if getattr(config, "want_spi", False):
     #    soc.add_spi_flash(mode="1x", module=W25Q32(Codes.READ_1_1_1), with_master=False)
     #    soc.add_spi_sdcard()
+
+    # FFT-Peripherie (experimental)
+    if getattr(config, "want_fft", False):
+        soc.fft_core = FFTCore(    
+            n=getattr(config, "fft_n", 32),
+            width_i=getattr(config, "fft_width_i", 16),
+            width_o=getattr(config, "fft_width_o", 16),
+            width_int=getattr(config, "fft_width_int", 16),
+            width_wram=getattr(config, "fft_width_wram", 16),
+            ifft=getattr(config, "fft_ifft", False),
+            input_bitreversed=getattr(config, "fft_input_bitreversed", False),
+        )
+        soc.add_csr("fft_core")
