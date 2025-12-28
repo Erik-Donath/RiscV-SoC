@@ -1,3 +1,65 @@
+# latex 
+# LaTeX Core auxiliary files
+*.aux
+*.log
+*.toc
+*.lof
+*.lot
+*.fls
+*.out
+*.fmt
+*.fot
+*.cb
+*.cb2
+*.lb
+
+# PDF and DVI output (wird normalerweise nicht versioniert)
+*.pdf
+*.dvi
+*.ps
+*.eps
+
+# LaTeXmk
+*.fdb_latexmk
+*.synctex.gz
+
+# Beamer presentations
+*.nav
+*.snm
+*.vrb
+
+# BibTeX and Biber
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+*.blx.bib
+
+# Glossaries and Nomenclatures
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.ist
+*.nlo
+*.nls
+
+# Indexing
+*.idx
+*.ilg
+*.ind
+*.mtc*
+*.mtc1
+
+# Editor backups (Vim, etc.)
+*.swp
+*.swo
+*~
+*.bak
+*.tex.backup
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -52,7 +114,6 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
-
 # Translations
 *.mo
 *.pot

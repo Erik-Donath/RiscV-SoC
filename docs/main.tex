@@ -1,191 +1,260 @@
-% ------------------------------------------------------------------------
-% Bachelorarbeit_Vorlage.tex
-% Professionelle LaTeX-Vorlage für eine Bachelorarbeit (Deutsch)
-% - Titelseite (Deckblatt)
-% - Eigenerklärungen, Danksagung, Abstract (Deutsch/Englisch)
-% - Inhaltsverzeichnis, Abbildungsverzeichnis, Tabellenverzeichnis, Abkürzungsverzeichnis
-% - Kapitelstruktur + Anhang
-% - Literatur mit biblatex (biber)
-% ------------------------------------------------------------------------
-% Nutzung: TeXLive / MiKTeX
-% Empfohlen: pdflatex + biber + pdflatex pdflatex
-% Alternativ: xelatex + biber (wenn fontspec gewünscht wird)
-% ------------------------------------------------------------------------
-\documentclass[12pt,oneside]{scrreprt} % KOMA-Script; oneside oder twoside je nach Vorgabe
+\documentclass[12pt,a4paper]{report}
 
-% Sprache, Eingabe und Schriften
-\usepackage[utf8]{inputenc}        % UTF-8 Eingabe (für pdflatex)
-\usepackage[T1]{fontenc}           % Schriftkodierung
-\usepackage[ngerman,english]{babel} % Hauptsprache: ngerman
-\usepackage{lmodern}               % moderne Latin-Modern Schrift
-\usepackage{microtype}             % optische Verbesserungen
-
-% Seitenlayout
-\usepackage{geometry}
-\geometry{a4paper,outer=25mm,inner=25mm,top=30mm,bottom=30mm}
+% --- Pakete für Layout, Sprache und Schrift ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage[a4paper, margin=2.5cm]{geometry}
 \usepackage{setspace}
-\onehalfspacing % 1,5-zeilig — oft gefordert
-
-% Graphiken, Tabellen, Farben
+\onehalfspacing
 \usepackage{graphicx}
-\usepackage{caption}
-\usepackage{subcaption}
-\usepackage{booktabs}  % schöne Tabellen
-\usepackage{longtable}
-\usepackage{tabularx}
-\usepackage{multirow}
-\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{array}
+\usepackage{pgfplotstable}
 
-% Kopf-/Fußzeile
-\usepackage{scrlayer-scrpage}
-\clearpairofpagestyles
-\ihead{\headmark}
-\ofoot{\pagemark}
-\setkomafont{pageheadfoot}{\small}
+\pgfplotsset{compat=1.18}
 
-% Hyperlinks
-\usepackage[hidelinks]{hyperref}
+\usepackage{lmodern} % ersetzt Arial (Arial ist nicht frei verfügbar)
+\renewcommand{\familydefault}{\sfdefault} % Sans Serif (ähnlich Arial)
+\usepackage[nottoc,numbib]{tocbibind}
+\usepackage{biblatex}
 
-% math
-\usepackage{amsmath,amssymb,amsthm}
+% --- BibTeX Datei ---
+\addbibresource{literatur.bib}
 
-% Zitate & Bibliographie
-\usepackage[backend=biber,style=authoryear,sortcites,maxcitenames=2,maxbibnames=99]{biblatex}
-\addbibresource{literatur.bib} % Datei literatur.bib anlegen
+% CSV-Datei für pgfplotstable
+\newcommand{\CSRFILE}{csr.csv}
 
-% Abkürzungsverzeichnis
-\usepackage[printonlyused]{acronym}
+% --- Kopf- und Fußzeilen ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\includegraphics[height=1cm]{logo.png}}  % Logo links
+\fancyhead[R]{\textbf{Projektdokumentation}}          % Titel rechts
+\fancyfoot[C]{Seite \thepage\ von \pageref{LastPage}}
 
-% Nützliches
-\usepackage{tocloft} % ToC-Anpassungen
-\setcounter{tocdepth}{2} % Tiefe des Inhaltsverzeichnisses
-\setcounter{secnumdepth}{3}
-
-% ------------------------------------------------------------------------
-% Titelseite anpassen
-% Ersetze Platzhalter (UNIVERSITAET, FACHBEREICH, STUDIERENDER, BETREUER, DATUM etc.)
-% Logo: lege logo.pdf oder logo.png in dasselbe Verzeichnis
-% ------------------------------------------------------------------------
+% --- Titelseite ---
 \begin{document}
 
-% -----------------------------
-% Deckblatt / Titelseite
-% -----------------------------
 \begin{titlepage}
-  \centering
-  \vspace*{1cm}
-  \includegraphics[height=3cm]{TLS_Logo.png}\\[1.5cm] % logo.png ersetzt durch Logo der Uni
-  {\LARGE \textsc{Theodor-Litt-Schule} \\}
-  \vspace{1.5cm}
-  {\Huge \bfseries Bau eines Risc-V32i CPU \\[0.5em] \MakeUppercase f\"ur den Sipeed-Tang-Nano 9K, mithilfe von Litex und migen \\}
-  \vspace{1.5cm}
-  {\Large vorgelegt von \\}
-  {\Large \textbf{Daniel Hohmann und Erik Donath} \\}
-  \vspace{0.8cm}
-  {\Large Fachbereich Praktische Informatik \\ Klasse: BG13PI \\ }
-  \vfill
-  {\large Lehrerin: Frau Engel \\}
-  \vspace{1cm}
-  {\large Abgabedatum: 1. Januar 2025 \\}
+    \centering
+    \includegraphics[width=4cm]{logo.png}\\[1cm]
+    {\Huge \textbf{Entwicklung eines eigenen Microcontrollers auf RV32i Basis mithilfe von litex auf dem Tang-Nano-9k FPGA}}\\[0.5cm]
+    {\Large Und der Implementierung platformspezifischer Codes}\\[2cm]
+    {\large Autor: Daniel Hohmann, Erik Donath}\\[0.3cm]
+    {\large Schule: Theodor-Litt-Schule}\\[0.3cm]
+    {\large Datum: \today}\\[3cm]
+    {\large Lehrer: Elisabeth Engel}\\
+    \vfill
 \end{titlepage}
 
-% -----------------------------
-% Sperrvermerk / Eigenerklärung
-% -----------------------------
-\cleardoublepage
-\thispagestyle{empty}
-\section*{Eidesstattliche Erklärung}
-Hiermit versichere ich,\ dass ich die vorliegende Arbeit selbstständig verfasst und keine anderen als die angegebenen Hilfsmittel verwendet habe.\\[1em]
-Ort, Datum:\\[2em]
-Unterschrift:Nicht in Öffentlicher Version enthalten\hrulefill
-
+% --- Inhaltsverzeichnis ---
+\tableofcontents
 \newpage
 
-% -----------------------------
-% Danksagung (optional)
-% -----------------------------
-\section*{Danksagung}
-Vorab, wir möchten uns herzlich beim Team von LiteX und LiteX-Boards bedanken, die ihr geniales Projekt als Open-Source zur Verfügung gestellt haben. Durch ihre großartige Arbeit und die offene Bereitstellung dieser Ressourcen konnten wir auf eine solide und vielseitige Grundlage zurückgreifen, die unser Projekt maßgeblich unterstützt hat. Ebenso gilt unser Dank dem Blog JustAnotherElectronicsBlog, dessen exzellentes Anfänger-Tutorial uns eine fundamentale Basis vermittelte, die wir erfolgreich für unsere Arbeit nutzen konnten. Diese wertvollen Beiträge haben wesentlich zu unserem Fortschritt und Verständnis beigetragen.
-\cleardoublepage
+% -------------------------------------------------
+% 1 Einführung
+% -------------------------------------------------
+\chapter{Einführung}
+\section{Einleitung}
+Das Ziel unseres Projektes war es, einen RISC-V RV32I für den Tang-Nano-9k zu implementieren. Die HDL (Hardware Description Language) der Wahl war VHDL, da sie robuster und typsicherer ist als Verilog.
 
-% -----------------------------
-% Abstract (Deutsch und Englisch)
-% -----------------------------
-\begin{abstract}
-\addcontentsline{toc}{chapter}{Kurzfassung}
-Kurzfassung auf Deutsch: kurze Beschreibung von Problemstellung, Methode, wichtigsten Ergebnissen und Schlussfolgerungen (max. 200–300 Wörter).
-\end{abstract}
+\section{Projektumfeld}
+Das Projekt hat im Rahmen des IT-Unterrichts im Unterrichtsfeld Prozessautomatisierung stattgefunden. Es wurde sowohl in der Schule als auch im privaten Umfeld aktiv daran gearbeitet.
 
-\begin{otherlanguage}{english}
-\begin{abstract}
-Abstract in English: short summary (200--300 words).
-\end{abstract}
-\end{otherlanguage}
+% -------------------------------------------------
+% 2 Analyse
+% -------------------------------------------------
+\chapter{Analyse}
+\section{Zielsetzung / Produktskizze}
 
-% -----------------------------
-% Inhaltsverzeichnis und Listen
-% -----------------------------
-\cleardoublepage
-\tableofcontents
-\cleardoublepage
-\listoffigures
-\cleardoublepage
-\listoftables
-\cleardoublepage
+Die gesteckten Projektziele waren in zwei Hauptkriterien unterteilt.  
+Das erste Kriterium bestand in der Entwicklung eines funktionsfähigen System-on-Chip (SoC) auf Basis der RISC-V-Architektur (RV32I). Der entwickelte SoC sollte in der Lage sein, eigenständig Software auszuführen, ähnlich wie ein Mikrocontroller beispielsweise auf einem Arduino-System. Ziel war es, Programme direkt auf dem SoC auszuführen und über dessen GPIO-Pins externe Hardwarekomponenten, wie LEDs oder Sensoren, ansteuern und auslesen zu können. Damit sollte eine einfache Schnittstelle zwischen Software und Hardware gewährleistet werden.\\
 
-% Abkürzungsverzeichnis
-\chapter*{Abkürzungsverzeichnis}
-\addcontentsline{toc}{chapter}{Abkürzungsverzeichnis}
-\begin{acronym}[UML]
-  \acro{PDF}{Portable Document Format}
-  \acro{HTML}{HyperText Markup Language}
-  % weitere Abkürzungen
-\end{acronym}
+Auf architektonischer Ebene war vorgesehen, dass der Prozessor grundlegende CPU-Komponenten enthält, die die effiziente Ausführung von Programmen ermöglichen. Dazu zählen eine Pipeline-Architektur für parallele Befehlsverarbeitung, ein Interrupt-Handling-System sowie optionale Module wie eine Multiply-Divide Unit (für RV32IM-Erweiterungen), eine Floating-Point Unit (FPU) für Gleitkommaoperationen und ein Timer-Subsystem. Darüber hinaus sollte das SoC-Design über eine klar definierte Speicherhierarchie verfügen — bestehend aus einem Instruction- und Data-Memory-Bereich sowie einem Bus-System zur Anbindung externer Peripherie.  
+Zusätzlich sollen Taktgenerierung und Reset-Logik modular realisiert sein, beispielsweise durch die Nutzung von MMCMs (Mixed-Mode Clock Manager), um verschiedene Taktfrequenzen für CPU-Kern und Peripherie bereitstellen zu können. \\
 
-\cleardoublepage
+Das zweite Hauptkriterium bezog sich auf die physische Implementierung: Der entwickelte SoC sollte nach erfolgreicher Simulation auch auf realer Hardware lauffähig sein. Konkret sollte der Chip auf dem gewählten FPGA-Board Tang Nano 9K implementiert und getestet werden. Dies erforderte die Integration der Hardware in die LiteX-Umgebung, das Generieren der entsprechenden Bitstream-Dateien sowie die erfolgreiche Übertragung und Inbetriebnahme des SoCs auf dem FPGA.  
+Hierbei war insbesondere sicherzustellen, dass alle Funktionen wie Takterzeugung, Speicheranbindung, GPIO-Steuerung und Programm-Upload, sowohl in der Simulation als auch auf der Zielhardware konsistent funktionieren.
 
-% -----------------------------
-% Hauptteil (Beispielkapitel)
-% -----------------------------
-\chapter{Einleitung}
-\section{Motivation}
-Hier kommt die Einleitung \dots
+\section{test}
 
-\section{Aufbau der Arbeit}
-Kurzbeschreibung der Kapitelstruktur
+Das im Rahmen des Projekts entwickelte System-on-Chip (SoC) wurde vollständig auf Grundlage der vorab definierten Soll-Kriterien implementiert. Der SoC basiert auf einem 32-Bit-RISC-V-Kern (RV32I) und wurde mithilfe der LiteX-Umgebung in Kombination mit Migen realisiert. Wesentliche Komponenten wie der CPU-Kern, der ROM-Bereich für das BIOS sowie der Systembus zur Kommunikation zwischen den Modulen konnten erfolgreich integriert und validiert werden. \\
 
-\chapter{Theoretische Grundlagen}
-\section{Grundbegriffe}
-\dots
+Die grundlegende Funktionalität des Systems, einschließlich der Programmausführung auf dem Prozessor, wurde durch Testprogramme in C überprüft. Dazu wurden einfache C-Anwendungen kompiliert, auf den SoC geladen und über die integrierte BIOS-Schnittstelle gestartet. Die dabei beobachteten Ergebnisse bestätigten, dass der Prozessor Befehle korrekt ausführt, Speicherzugriffe ordnungsgemäß funktionieren und die Simulationsergebnisse mit dem Verhalten auf der realen FPGA-Hardware übereinstimmen. \\
 
-\chapter{Methodik}
-\section{Datenerhebung}
-\section{Datenanalyse}
+Der entwickelte SoC wurde erfolgreich auf dem Tang Nano 9K FPGA synthetisiert, geladen und in Betrieb genommen. Einzelne Architekturkomponenten wie der Speichercontroller und der Systembus funktionierten stabil und wie vorgesehen. Der ursprünglich geplante MMCM (Mixed-Mode Clock Manager) zur flexiblen Takterzeugung befindet sich hingegen noch in einem experimentellen Entwicklungszweig und war zum Zeitpunkt der Implementierung nicht vollständig funktionsfähig. Stattdessen wurde auf eine Standardtakterzeugung des FPGA-Boards zurückgegriffen, um den SoC zuverlässig betreiben zu können. Dadurch konnte das System mit stabilen Taktraten ausgeführt und getestet werden, wenngleich die dynamische Taktanpassung noch nicht realisiert ist. \\
 
-\chapter{Ergebnisse}
-\section{Ergebnisdarstellung}
-\section{Interpretation}
+Die Ansteuerung der externen GPIO-Pins wurde im Design vorgesehen und auf logischer Ebene implementiert, konnte jedoch mangels funktionaler physischer Zuordnung auf dem verwendeten Tang Nano 9K bislang nur theoretisch verifiziert werden. Simulationen und der Systemaufbau deuten auf eine grundsätzlich korrekte Integration hin, eine praktische Validierung steht jedoch noch aus. \\
 
-\chapter{Diskussion}
-Stärken, Schwächen, Limitationen
+Insgesamt wurde der überwiegende Teil der Projektziele erfolgreich erreicht. Der entwickelte RISC-V-basierte SoC ist simulations- und hardwareseitig weitgehend funktionsfähig, kann C-Code ausführen und bildet eine solide Basis für zukünftige Erweiterungen, insbesondere für die Integration eines vollständig implementierten MMCM-Systems und die physikalische Verifikation der GPIO-Schnittstellen.
 
-\chapter{Fazit und Ausblick}
-Schlussfolgerungen und mögliche Weiterführungen
 
-% -----------------------------
-% Literaturverzeichnis
-% -----------------------------
-\cleardoublepage
-\printbibliography[heading=bibintoc]
 
-% -----------------------------
+\section{Begründung der Entscheidung}
+Das Projekt wurde ausgew\"ahlt aus der der intension heraus eine Herausforderung zu schaffen mit einem Projekt was eigentlich f\"ur die angesetzte Zeit und das von der Schule vermittelten wissens nicht erreichbar ist. Ein weiterer grund f\"ur diese entscheidung war die motivation das eigene wissen zu vertiefen und zu erweitern es war die wissbelgier zu verstehen wie ein microkontroller funktioniert wie einfach es ist so etwas zu entwickeln wir wollten nicht einfach wie die anderen ein Projekt auf etwas aufbauen wo wir selber nicht wissen wie es funktioniert und wie es aufgebaut ist.
+
+\section{Pflichtenheft}
+
+Das Pflichtenheft konkretisiert die in der Produktskizze beschriebenen Ziele für den RISC-V-RV32I-SoC auf dem Tang Nano 9K FPGA. Es legt die Architektur des CPU-Kerns, die 5‑stufige Pipeline, das FPU-Design (Floating Point Unit -- Gleitkomma-Einheit) sowie die Rolle des LiteX-Frameworks bei Integration, Takterzeugung und Peripherie-Anbindung fest. Die Implementierung erfolgt in synthesizierbarem SystemVerilog (Hardware-Beschreibungssprache); der SoC wird über das LiteX-Buildsystem erzeugt, das Bus-Infrastruktur (Wishbone -- On-Chip‑Bus), Clock/Reset-Management (Takt-/Zurücksetz-Logik), Speicher- und Peripherie-Mapping sowie den FPGA-spezifischen Build-Flow (Synthese und Place\&Route) automatisiert bereitstellt. \\
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{Pipline_5_Stage.png}
+    \caption{Fünfstufige Pipeline bestehend aus Fetch-, Decode-, Execute-, Memory- und Writeback-Stufe. Die Abbildung zeigt PC-Logik, Branch-Vorhersage, Register-File, ALU, Datenpfad sowie die Pipeline-Register zwischen den Stufen.}
+    \label{fig:pipeline5}
+\end{figure}
+
+Die CPU verwendet eine klassische 5‑Stufen-Pipeline (Fetch, Decode, Execute, Memory, Writeback), wie in Abbildung~\ref{fig:pipeline5} dargestellt. In der \emph{Fetch}-Stufe erzeugt ein Program Counter (PC) die aktuelle Befehlsadresse, optional mit Unterstützung von Komponenten wie Branch Target Buffer (BTB -- Sprungzielpuffer) und Branch History/Predictor (BHT, PHT -- Sprungvorhersage), die in der Abbildung als separate Blöcke visualisiert sind. Die Instruktion wird aus dem Instruktionsspeicher gelesen und über das IfId-Pipeline-Register an die Decode-Stufe übergeben, wodurch eine klare zeitliche Trennung zwischen Adressberechnung und Befehlsdekodierung erreicht wird. \\
+
+In der \emph{Decode}-Stufe wird die Instruktion dekodiert und über den Decoder-Block in Steuersignale, Registeradressen und Immediate-Werte (unmittelbare Operanden) aufgeteilt; gleichzeitig liest das Register File (REGFILE) die Operanden \texttt{rs1} und \texttt{rs2}. Ein Load-Use-Block überwacht Datenabhängigkeiten zwischen Load‑Instruktionen und nachfolgenden Instruktionen und kann bei Bedarf die Pipeline anhalten (Stall) oder weiterlaufen lassen, wie durch die Rückkopplungssignale in Abbildung~\ref{fig:pipeline5} angedeutet. Alle relevanten Signale werden im IdEx-Pipeline-Register zwischengespeichert, das in der Abbildung den Übergang zur Execute-Stufe markiert und so für deterministische Signalübergaben sorgt. \\
+
+In der \emph{Execute}-Stufe berechnet die ALU (Arithmetic Logic Unit -- Rechen- und Logikeinheit) Zieladressen für Speicherzugriffe und Ergebnisse arithmetisch-logischer Operationen; Forwarding-Multiplexer (Datenweiterleitungs-MUX) führen Ergebnisse aus späteren Pipeline-Stufen zurück auf die ALU-Eingänge, um Data-Hazards (Datenkonflikte) zu vermeiden. Bei Sprungbefehlen entscheidet die ALU oder eine separate Branch-Logik über die Sprungbedingung, und ein PC-Multiplexer wählt das nächste PC-Ziel (normaler Sequenz-PC oder Sprungadresse), was in der IF-Logik von Abbildung~\ref{fig:pipeline5} über die Signale für neuen PC sichtbar ist. Das ExMa-Pipeline-Register trennt Execute- und Memory-Stufe und leitet die berechneten Adressen und Daten an den Speicherpfad weiter. \\
+
+In der \emph{Memory}-Stufe werden Speicherzugriffe über den Datenpfad (Adress-, Daten- und Steuerleitungen) realisiert; ein Alignment-/Byte-Select-Block sorgt für korrekt ausgerichtete Byte-, Halfword- und Word-Zugriffe. Gleichzeitig können in dieser Stufe weitere Steuersignale für nachfolgende Interrupt- oder Ausnahmebehandlung gesammelt werden, etwa Fehlzugriffe oder Miss-Signale. Das MaWb-Pipeline-Register übergibt schließlich die Daten an die \emph{Writeback}-Stufe, in der über einen Abschlussmultiplexer ausgewählt wird, ob ALU-Ergebnis oder geladene Daten in das Register File zurückgeschrieben werden; der geschlossene Ergebnisrückweg ist in Abbildung~\ref{fig:pipeline5} als Wb\_rslt-Signal markiert. \\
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{fpuDesign.png}
+    \caption{FPU-Design mit separatem Register-File, Hazard-Logik und spezialisierten Pipelines für Load/Convert, Multiplikation, Addition, Division, Quadratwurzel und FMA. Die Join- und Completion-Logik koppelt die FPU an die Writeback-Stufe der CPU an.}
+    \label{fig:fpu}
+\end{figure}
+
+Das FPU-Design in Abbildung~\ref{fig:fpu} zeigt eine entkoppelte Gleitkomma-Pipeline, die eng mit der CPU verbunden ist, aber eigene Pipeline-Stufen und Hazard-Logik besitzt. Auf CPU-Seite werden FPU-Befehle in der Decode-Stufe erkannt und als Kommando (\texttt{cmd}) an die FPU übergeben; der Hazard-Block am Eingang der FPU stellt sicher, dass neue FPU-Operationen nur akzeptiert werden, wenn interne Ressourcen frei sind und keine strukturellen Konflikte vorliegen. Die FPU verfügt über ein eigenes Register File (RF) für Gleitkommaregister und mehrere spezialisierte Funktionspfade, die in der Abbildung als separate Pipelines für \texttt{LOAD/I2F} (Integer‑zu‑Float‑Konvertierung), \texttt{MUL} (Multiplikation), \texttt{ADD} (Addition), \texttt{DIV} (Division) und \texttt{SQRT} (Quadratwurzel) dargestellt sind. \\
+
+Die zentrale FMA-Einheit (Fused Multiply‑Add -- kombinierte Multiplikations‑Addierer-Einheit) bildet das Herz der FPU-Pipeline und kann je nach Befehl Multiplikation, Addition oder kombinierte Operationen ausführen; vorgeschaltete Pipeline-Register erlauben hohe Taktfrequenzen bei mehreren parallel aktiven FPU-Befehlen. Weitere Blöcke implementieren Operationen wie \texttt{MIN}, \texttt{MAX}, \texttt{SGNJ} (Vorzeichenmanipulation), \texttt{F2I} (Float‑zu‑Integer‑Konvertierung) und \texttt{CMP} (Vergleich), während die Join-Logik Ergebnisse aus den unterschiedlichen Funktionspfaden zusammenführt und geordnet an die Completion-Phase weitergibt. Über das in Abbildung~\ref{fig:fpu} eingezeichnete Commit-Interface werden FPU-Ergebnisse in der Writeback-Stufe der CPU in die Integer- oder FPU-Register geschrieben; parallel aktualisiert die FPU Status- und Fehlerflags (fpuFlags) sowie Performance-Counter, die der CPU zur Auswertung zur Verfügung stehen. \\
+
+Die Instruktionsimplementierung folgt der RV32I-ISA (RISC-V Instruction Set Architecture -- Befehlssatz-Architektur) mit U-, I-, R-, S-, B- und J‑Formaten; die Dekodierung erfolgt in der Decode-Stufe der Pipeline und steuert die in den Abbildungen gezeigten Pfade für ALU, Speicherzugriffe, Branch-Logik und FPU-Anbindung. LiteX übernimmt im Hintergrund die Rolle des SoC-Baukastens und sorgt dafür, dass die in den Abbildungen dargestellten CPU- und FPU-Pipelines nahtlos in ein vollständiges System eingebettet werden, indem es Wishbone‑Schnittstellen generiert, Speicher und Peripherie an die Memory-Stufe bindet, Clock- und Reset-Netze für alle Pipeline-Register bereitstellt und den Build-Flow bis hin zum Bitstream automatisiert. \\
+
+
+
+% -------------------------------------------------
+% 3 Planung
+% -------------------------------------------------
+\chapter{Planung}
+\section{Personal}
+Das Personal bestand aus zwei arbeitern Daniel und Erik die aufgaben waren gleich aufgeteilt dardurch das es nur einen FPGA gab wurde immer nach einer zeit gewechselt die zeit die der eine den FPGA hatte durfte er an dem code arbeiten waerend der andere an der Dokumentation und an rechere gearbeitet hat das ganze wurde die ganze zeit so durchgewechslet dardurch haben bei diesem Projekt ausgewogen in beiden bereichen gearbeitet.
+
+\section{Material}
+Als Material haben wir unseren FPGA(Tang Nano 9k) sowie unsere Laptops als auch ein USB-C Kabel verwendet.
+
+\section{Zeit}
+
+Das Zeitmanagement war von Beginn an schwer einzuschätzen, da anfangs unklar war, ob wir das Projekt überhaupt in der geplanten Form umsetzen können — selbst mit der Entscheidung, nicht alles von Grund auf neu zu entwickeln. Auch zum derzeitigen Stand dieser Dokumentation (\today) hat die verfügbare Zeit bei weitem nicht ausgereicht. Wir verfügen zwar über ein funktionsfähiges SoC, jedoch ohne PlatformIO-Integration und ohne RTOS-Unterstützung. Das Projekt befindet sich weiterhin im Aufbau, und im Verlauf sind noch mehrere neue Ideen hinzugekommen, die jedoch zeitlich nicht mehr umsetzbar waren.
+
+Abbildung~\ref{fig:SoC} zeigt den zeitlichen Verlauf der Entwicklung des Basis-SoCs.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\textwidth]{entwicklung_muTau.png}
+    \caption{Zeitleiste (erstellt mit Mermaid), welche die Commits und den ungefähren Fortschritt des Projekts visualisiert.}
+    \label{fig:SoC}
+\end{figure}
+
+Zum Diagramm~\ref{fig:SoC} ist anzumerken, dass unser ursprünglicher Projektansatz darin bestand, den SoC komplett in VHDL von Grund auf zu entwickeln. Diese frühe Phase und die dort erzielten Fortschritte sind im gezeigten Zeitverlauf nicht mehr enthalten.
+
+Wie der Zeitleiste zu entnehmen ist, hat insbesondere das Aufsetzen des Docker-Containers unerwartet viel Zeit in Anspruch genommen, insgesamt mehr als drei Wochen(ist nicht ganz aus dem Diagramm zu entnehmen da wir am DockerContainer schon vorher gesesen haben). Nach Abschluss dieser Aufgabe traten weitere Verzögerungen auf: Unser ursprüngliches Ziel war es, den Bitstream mithilfe einer Open-Source-Toolchain zu synthetisieren, zu platzieren und zu routen. Wie sich jedoch später herausstellte, waren die verfügbaren Open-Source-Tools für unsere Anforderungen nicht ausreichend optimiert, was uns letztlich etwa zwei zusätzliche Wochen kostete. Nachdem dieses Problem behoben war, konnten wir endlich den bis dahin entwickelten Code auf der physischen Hardware testen.
+
+Während des gesamten Projekts haben wir parallel an mehreren Teilbereichen gearbeitet. Jeden Montag fand eine Gruppenbesprechung statt, in der alle Teammitglieder ihren aktuellen Stand präsentierten. Gemeinsam entschieden wir dann, welche Aufgaben weiterverfolgt oder vorerst pausiert werden sollten. Feste Zeitpläne haben wir bewusst vermieden, da sich im Verlauf oft zeigte, dass diese in der Praxis kaum realistisch waren.
+
+Ab einem gewissen Zeitpunkt hat sich Erik vom Hauptprojekt abgekoppelt, um an der Integration von PlatformIO zu arbeiten. Ziel war es, das Projekt zu einem wirklich nutzbaren Produkt weiterzuentwickeln. Der zeitliche Verlauf dieser Arbeiten ist in Abbildung~\ref{fig:PIO} dargestellt.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\textwidth]{entwicklung_muTau_PlatformIO.png}
+    \caption{Zeitleiste (erstellt mit Mermaid) mit den Commit-Zeiten und Arbeitsschwerpunkten der PlatformIO-Integration.}
+    \label{fig:PIO}
+\end{figure}
+
+Die Diagramme enthalten ausschließlich zeitlich relevante Aspekte, jedoch keine detaillierten Ablaufbeschreibungen oder Programmierfortschritte.
+
+% -------------------------------------------------
+% 4 Durchführung
+% -------------------------------------------------
+\chapter{Durchführung}
+\section{Bau des Modells}
+im Bau des Modelles beziehen wir uns auf unser entprodukt nicht auf das Produkt was wir davor versucht haben zu entwickeln.
+\subsection{Docker}
+Um \"Uberhaupt anfangen zu k\"onnen zu entwickeln mussten wir uns erstmal eine entwicklungsumgebung schafenn die folgende anforderungen erfuellt:
+\begin{itemize}
+    \item muss Platformunabh\"angig \ reproduzierbar sein (Damit wir beide die identische entwicklungsumgebung haben)
+    \item Sie musste alle tools haben und alle tools mussten miteinander kompertibel sein (um abh\"anigkeitsfehler zu vermeiden)
+    \item f\"ur das entprodukt es sollte einfach zu bedienen sein und fehler unanf\"allig sein damit es jeder einfach verwenden kann.
+\end{itemize}
+Die Entscheidung ist uns erstmal nicht leichtgefallen wir standen zwischen \textbf{nix} oder \textbf{Docker}. Nix h\"atte die vorteile gehabt das es leichter gewesen w\"are und schneller zu bauen das Hauptargument wesegen sich dagegenentschieden worden ist war das es viele programme der toolchain einfach nicht als nix package gab. Deswegen wurde sich dann f\"ur eine Kombination aus Docker und Makefile entschieden damit man das Projekt mit einfachen CLI-Commands bauen kann ohne ein Docker Profi zu sein also haben wir ein Docker-Container geschrieben der auf debian-bookworm-light basis laeuft um uns einfach bloatware zu sparen und um den Container schneller bauen zu k\"onnen weiter haben wir dann die tools im Container installiert wie Python(haben hier eine venv umgebung gemacht) und litex als auch litex-boards so wie ein paar build dependencies damit auch alles l\"auft wie mason, ninja2 etc... als der Container Funktioniert hat wobei hier anzumerken ist das unser anfangsContainer ja noch die ganzen opensource toolchains gebaut hat pro aenderung im Container knapp 30min. gebraucht hat bis er gebaut war bzw. einen fehler ausgegeben hat und wir etwas aendern mussten um das etwas zu optimieren haben mir ein cache eingebaut und das ganze in ein 5-Stages aufgeteilt sowie mit Docker args gearbeitet um in verschiedene Stage combinationen ausfuehren zu koennen. 
+\subsection{Tool-Chain}
+wir wollten unserer Projekt uhrspr\"unglich so aufbauen das wir alles auf opensource toolchains aufbauen auch mit dem hintergrund das man sich um die Gowin-EDA zu bekommen bei Gowin selber registrieren muss und dabei seine informationen preisgeben muss was wir einfach nicht wollten und auch fuer die sp\"ateren nutzer nicht wollten also wollten wir eine opensource toolchain verwenden bestehend aus yosys(ein routing tool), nextpnr-himbaechel(zum generieren eines bitstreams anhand der routing file und der .cst file) so wie zum schluss apycula zum \"ubersetzen des bitstreams in ein f\"ur unser board angepassten bitstream.
+\\
+Soweit der Theoretische plan dieser hat aber in der Realit\"at nicht funktioniert aus dem einfachen grund, das diese toolchain absoulut nicht optimiert ist sprich f\"ur einfache Projekte funktioniert diese toolchain unfassbar gut aber f\"ur komplexere und gr\"ossere Projekte funktioniert dieseToolchain einfach nicht da sie die LUTS einfach nicht gut optimiert.
+\\
+Also musste der Plan B genutzt werden der voraussieht, das wir die GOWIN-EDA nutzen da aber keiner der Entwickler seine Informationen Hergeben wollte haben wir nach m\"oglichkeiten gesucht die GOWIN-EDA ohne Informationen Preiszugeben herunterladen zu k\"onnen. Hier hat Erik beim Reverse Engeenieren der Website gesehen das man um die executable der GOWIN-EDA Herunterladen zu k\"onnen keine Seasion braucht und somit wurde eine m\"oglichkeit gefunden sogar ohne login einfach via curl die executable runterzuladen womit wir hier etwas f\"ur jeden unfassbar wertvolles gefunden haben der eben g\"unstig mit fpga anfangen will aber eben nicht seine informationen Preisgeben will. 
+
+\subsection{SoC}
+Da wir ja aber durch unserern Docker-Container dazu in der lage waren Trozdem schon zu entwickeln wurde parallel zu dem reverse Engeenerieren der website bereits die strukturellen grundladen sowie der erste code f\"ur den SoC geschrieben wo angefangen wurde sich dokumentationen die wirklich schlecht bis garnicht verf\"ugbar waren angeschaut zu dem litex framework.
+\\
+es wurde angefangen erstmal die ganzen tutorials durchzugehen diese zu simulieren und zu testen wo die st\"arken und die schw\"achen des frameworks liegen schnell wurde bewusst das es wirklich einfach nicht schaffbar ist in der zeit da die Dokumentationen einfach immer das gleiche waren als ob es einen bsp. code gib den einfach nur alles immer wieder versuchen zu erklaeren anstatt wirklich mal den code aufzuteilen und verschiedene schritte erkl\"aren also mussten wir uns den Source code direkt anschauen und eben aus ihm lernen und ihn verstehen und so ist daraus unserer erster prototyp Entstanden wo alles ordentlich strukturiert und gut aufgeteilt in die ordnerstruktur eingebettet worden ist dardurch das wir nun auch den code auf dem fpaga selber testen konnten konnten wir nun \"uberpr\"ufen ob der code den nun auch auf dem pysichen ger\"at funktioniert. wo wir erst zu ein paar fehlern gekommen sind zu lesen in n\"achsten kapitel ~\ref{sub:serial}.
+\\ 
+wir haben jedoch auch zu diesem zeitpunkt gemerkt das man so viel mehr aus diesem Projekt rausholen kann da es grade einsteigen den einstieg in SoC entwicklung mit litex immens vereinfacht durch den Docker-Container der daf\"ur sogrt das wirklich einfach alles vereinfacht wird und auch dardurch das unsere Codebasis viel besser aufgeteilt ist und nicht alles in eine datei geschoben worden ist. zudem haben wir die m\"oglichkeit gesehen daraus wirklich ein Produkt zu machen was man nutzen kann anstelle eines closed source microkontroller.
+
+\subsubsection{das Projekt muTau}
+Ab diesem moment haben wir uns gedacht wie w\"are es wenn wir ein Produkt daraus machen was eben nicht nur Einsteigen das einsteigen in SoC entwicklung vereinfacht sondern was wenn wir daraus einen microkontroller machen der opensource ist und den jeder nutzen kann und erweitern kann wie er will also haben wir uns an dieser stelle dazu entschieden das Projekt zu erweitern wir hatten ja einen Funktionierenden kern aber was will man mit dem kern wenn man nicht weis wie man ihn benutzen kann also wurde sich \"uberlegt wie man das Projekt nicht nur anschaulich sondern auch nutzbar machen k\"onnte. da kam die idee dazu eine PlatformIO intigration zu schreiben die es erm\"oglicht jedem nutzer von microkontrollern den einstieg zu erleichtern da PlatformIO eine einfache umgebung ist die bereits weit verbreitet ist und von vielen leuten bereits genutzt wird. f\"ur leute mit mehr anspruch haben die tiefer im thema drinnen sind haben wir uns \"uberlegt wie es mit einem RTOS w\"are also haben wir zwei neue Projekte zus\"atzlich angefagen eben ein RTOS Project wo wir eine Zephyr config erstellt haben und ein PlatformIO projekt wo es das ziel war eine PlatformIO integration zu schreiben f\"ur unseren SoC. weitere dinge die zus\"atzlich unternommen worden sind wie marketing und website sind hier zu finden ~\ref{sub:marketing}.
+
+\subsection{serial connection}
+\label{sub:serial}
+
+\subsection{Branches und reviews}
+
+
+\subsection{website und Marketing}
+\label{sub:marketing}
+
+\section{Implementation}
+Erklärung des Software- oder Hardwareteils, Codebeispiele einfügen.
+
+\section{Test}
+Teststrategien, Ergebnisse, ggf. Benchmarks.
+
+% -------------------------------------------------
+% 5 Projektabschluss
+% -------------------------------------------------
+\chapter{Projektabschluss}
+\section{Fazit}
+Bewertung der Zielerreichung und Herausforderungen.
+
+\section{Ausblick}
+\subsection{weitere Ideen}
+Verbesserungsmöglichkeiten und mögliche Weiterentwicklung.
+
+% -------------------------------------------------
 % Anhang
-% -----------------------------
+% -------------------------------------------------
 \appendix
-\chapter{Appendix A: Fragebogen}
-Hier steht der Fragebogen oder ergänzende Tabellen.
+\chapter{Anhang}
+\section{Abbildungen}
+Hier kommen Schaltpläne, Diagramme oder Screenshots hinein.
 
-\chapter{Appendix B: Quellcode}
-Beispiel: Quellcode, Datenblätter etc.
+\section{Beispielquellcode}
+\begin{verbatim}
+int main(void) {
+    return 0;
+}
+\end{verbatim}
+
+\section{Fotos / Videoclips}
+Optionaler visueller Teil.
+
+% -------------------------------------------------
+% Quellenverzeichnis
+% -------------------------------------------------
+\printbibliography
+
+% -------------------------------------------------
+% Andere Daten
+% -------------------------------------------------
+\chapter{Andere Daten}
+
 
 \end{document}
