@@ -128,7 +128,7 @@ Das Pflichtenheft konkretisiert die in der Produktskizze beschriebenen Ziele fü
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{Pipline_5_Stage.png}
-    \caption{Fünfstufige Pipeline bestehend aus Fetch-, Decode-, Execute-, Memory- und Writeback-Stufe. Die Abbildung zeigt PC-Logik, Branch-Vorhersage, Register-File, ALU, Datenpfad sowie die Pipeline-Register zwischen den Stufen.}
+    \caption{Fünfstufige Pipeline bestehend aus Fetch-, Decode-, Execute-, Memory- und Writeback-Stufe. Die Abbildung zeigt PC-Logik, Branch-Vorhersage, Register-File, ALU, Datenpfad sowie die Pipeline-Register zwischen den Stufen. ~\cite{RVCoreP}}
     \label{fig:pipeline5}
 \end{figure}
 
@@ -143,7 +143,7 @@ In der \emph{Memory}-Stufe werden Speicherzugriffe über den Datenpfad (Adress-,
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.7\textwidth]{fpuDesign.png}
-    \caption{FPU-Design mit separatem Register-File, Hazard-Logik und spezialisierten Pipelines für Load/Convert, Multiplikation, Addition, Division, Quadratwurzel und FMA. Die Join- und Completion-Logik koppelt die FPU an die Writeback-Stufe der CPU an.}
+    \caption{FPU-Design mit separatem Register-File, Hazard-Logik und spezialisierten Pipelines für Load/Convert, Multiplikation, Addition, Division, Quadratwurzel und FMA. Die Join- und Completion-Logik koppelt die FPU an die Writeback-Stufe der CPU an. ~\cite{VexRiscv}}
     \label{fig:fpu}
 \end{figure}
 
@@ -718,6 +718,7 @@ class SoCConfig:
 % -------------------------------------------------
 % Quellenverzeichnis
 % -------------------------------------------------
+\section{Quellen}
 \nocite{*}  % Zeigt ALLE Bib-Einträge an
 \printbibliography[title={Quellen}]
 
