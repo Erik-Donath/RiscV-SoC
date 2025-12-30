@@ -329,27 +329,7 @@ Die \texttt{SoCConfig}-Dataclass fasst die build- und board-spezifischen Paramet
   \item Output-Pfad: \texttt{build/<board>}
 \end{itemize}
 
-Beispiel (Auszug):
-\begin{lstlisting}[language=Python,frame=single]
-# soc/config.py
-from dataclasses import dataclass
-@dataclass
-class SoCConfig:
-    board_name: str = "tang_nano_9k"
-    sys_clk_freq: float = 27e6
-    with_external_ram: bool = True
-    integrated_rom_size: int = 128 * 1024
-    integrated_sram_size: int = 8 * 1024
-    external_ram_size: int = 4 * 1024 * 1024
-    cpu_type: str = "vexriscv"
-    cpu_variant: str = "standard"
-    build_name: str = "soc"
-    output_dir: str = "build"
-    # ...
-    @property
-    def output_path(self):
-        return f"{self.output_dir}/{self.board_name}"
-\end{lstlisting}
+Beispiel (Auszug): $\rightarrow$ ~\ref{soconfig}.
 
 \subsubsection{Basis-SoC (BaseSoC)}
 \texttt{BaseSoC} (erbt von \texttt{litex.soc.integration.soc\_core.SoCCore}) setzt das SoC zusammen:
@@ -360,72 +340,12 @@ class SoCConfig:
   \item Lässt das Board proprietäre Peripherie hinzufügen (GPIOs, UART, LEDs, etc.).
 \end{itemize}
 
-Ausschnitt:
-\begin{lstlisting}[language=Python,frame=single]
-# soc/base.py
-from litex.soc.integration.soc_core import SoCCore
-class BaseSoC(SoCCore):
-    def __init__(self, config):
-        self.soc_config = config
-        board = get_board(config.board_name)
-        platform = board.create_platform()
-
-        self.crg = ClockDomainGenerator(
-            platform=platform,
-            sys_clk_freq=config.sys_clk_freq,
-            input_clk_name=getattr(board, "input_clk_name", platform.default_clk_name),
-            input_clk_freq=getattr(board, "input_clk_freq", config.sys_clk_freq),
-        )
-
-        SoCCore.__init__(
-            self,
-            platform,
-            config.sys_clk_freq,
-            cpu_type=config.cpu_type,
-            cpu_variant=config.cpu_variant,
-            cpu_reset_address=config.cpu_reset_address,
-            integrated_rom_size=config.integrated_rom_size,
-            integrated_sram_size=config.integrated_sram_size,
-            ident=f"RISC-V SoC on {board.name}",
-            ident_version=True,
-        )
-
-        if not self.integrated_main_ram_size and config.with_external_ram:
-            board.add_main_memory(self, platform, config)
-
-        board.add_peripherals(self, platform, config)
-\end{lstlisting}
+Ausschnitt: ~\ref{PIO:basesoc}.
 
 \subsubsection{Clocking / CRG}
 Die Clock- und Reset-Logik ist in \texttt{soc/clocking.py} implementiert. Für Gowin GW1N/GW1NR Devices wird ein GW1N-PLL genutzt, ansonsten ein einfacher Pass-Through (sofern die Eingangsfrequenz der Ziel-Frequenz entspricht).
 
-Beispiel (Kernlogik):
-\begin{lstlisting}[language=Python,frame=single]
-# soc/clocking.py
-from litex.soc.cores.clock.gowin_gw1n import GW1NPLL
-class ClockDomainGenerator(LiteXModule):
-    def __init__(self, platform, sys_clk_freq, input_clk_name="clk27", input_clk_freq=27e6):
-        self.rst = Signal()
-        self.cd_sys = ClockDomain()
-        clk_in    = platform.request(input_clk_name)
-        reset_btn = platform.request("user_btn", 0)
-
-        if hasattr(platform, "devicename"):
-            self._create_gowin_pll(platform, clk_in, reset_btn, input_clk_freq, sys_clk_freq)
-        else:
-            raise NotImplementedError(...)
-
-    def _create_gowin_pll(self, platform, clk_in, reset_btn, input_freq, output_freq):
-        dev = platform.devicename
-        if dev.startswith("GW1N") or dev.startswith("GW1NR"):
-            self.pll = GW1NPLL(devicename=platform.devicename, device=platform.device)
-            self.comb += self.pll.reset.eq(~reset_btn)
-            self.pll.register_clkin(clk_in, input_freq)
-            self.pll.create_clkout(self.cd_sys, output_freq)
-        else:
-            self.comb += self.cd_sys.clk.eq(clk_in)
-            self.comb += self.cd_sys.rst.eq(~reset_btn)
-\end{lstlisting}
+Beispiel (Kernlogik) $\rightarrow$ ~\ref{PIO:kernlogik}.
 
 \subsubsection{Builder / Build-Flow}
 Der Build-Entry-Point ist \texttt{soc/builder.py}. Er erzeugt ein \texttt{BaseSoC}-Objekt, bindet LiteX's \texttt{Builder} ein und bietet Optionen zum Bauen, Flashen und Laden (SRAM):
@@ -437,33 +357,7 @@ Wesentliche Funktionen:
   \item Ausgabe der CSR-Map (\texttt{csr.csv}) in den Output-Ordner.
 \end{itemize}
 
-Ausschnitt:
-\begin{lstlisting}[language=Python,frame=single]
-# soc/builder.py
-from litex.soc.integration.builder import Builder
-
-def build_soc(config: SoCConfig, build=False, flash=False, load=False):
-    soc = BaseSoC(config)
-    builder = Builder(soc, output_dir=config.output_path, csr_csv=f"{config.output_path}/csr.csv")
-
-    if build:
-        builder.build()
-    if flash:
-        prog = soc.platform.create_programmer()
-        bitstream = builder.get_bitstream_filename(mode="flash", ext=".fs")
-        prog.flash(0, bitstream)
-        bios = builder.get_bios_filename()
-        prog.flash(0x40000, bios, external=True)
-    if load:
-        prog = soc.platform.create_programmer()
-        bitstream = builder.get_bitstream_filename(mode="sram")
-        prog.load_bitstream(bitstream)
-    return builder
-
-def main():
-    # Argumentparsing: --board, --build, --flash, --load, ...
-    # Erstellt SoCConfig und ruft build_soc auf
-\end{lstlisting}
+Ausschnitt $\rightarrow$ ~\ref{PIO:csr}.
 
 \subsection{Firmware / Software-Interaktion}
 LiteX generiert beim SoC-Build Header- und Linker-Dateien (unter \texttt{build/<board>/software/include/generated}). Diese enthalten CSR-Definitionen (Control and Status Registers) und Regions-Definitionen (z.\,B. \texttt{regions.ld}), die Firmware benötigt:
@@ -481,20 +375,7 @@ Der typische Firmware-Start besteht aus:
 \end{enumerate}
 
 \subsection{Beispiel: minimale Firmware (aus dem Baseline-Repository)}
-Eine typische Demo-Firmware toggelt LEDs über die CSR-API:
-\begin{lstlisting}[language=C,frame=single]
-#include <generated/csr.h>
-
-int main(void) {
-    while (1) {
-        leds_out_write(0xAA);
-        for(int i = 0; i < 1000000; i++); // Busy-wait
-        leds_out_write(0x55);
-        for(int i = 0; i < 1000000; i++);
-    }
-    return 0;
-}
-\end{lstlisting}
+Eine typische Demo-Firmware toggelt LEDs über die CSR-API $\rightarrow$ \ref{PIO:main.c}.
 
 \bigskip
 \subsubsection{Architekturübersicht (Software)}
@@ -516,65 +397,12 @@ Wesentliche Aufgaben:
   \item \texttt{main} aufrufen; falls \texttt{main} zurückkehrt, Endlosschleife.
 \end{itemize}
 
-Beispiel (aus \texttt{src/crt0.S}):\begin{verbatim}
-/* src/crt0.S - Minimal startup code for VexRiscv on LiteX */
-
-.section .init, "ax"
-.global _start
-
-_start:
-    /* Set stack pointer to top of SRAM (0x10000000 + 0x2000 = 0x10002000) */
-    li sp, 0x10002000
-
-    /* Clear the BSS segment */
-    la t0, _fbss
-    la t1, _ebss
-bss_loop:
-    bgeu t0, t1, bss_done
-    sw zero, 0(t0)
-    addi t0, t0, 4
-    j bss_loop
-bss_done:
-
-    /* Copy data section from ROM to RAM if needed (optional for SRAM-only) */
-    la t0, _fdata
-    la t1, _edata
-    la t2, _fdata  /* In SRAM-only config, data is already in place */
-data_loop:
-    bgeu t0, t1, data_done
-    lw t3, 0(t2)
-    sw t3, 0(t0)
-    addi t0, t0, 4
-    addi t2, t2, 4
-    j data_loop
-data_done:
-
-    /* Call main */
-    call main
-
-halt:
-    j halt
-\end{verbatim}
+Beispiel (aus \texttt{src/crt0.S}) $\rightarrow$ ~\ref{PIO:crt0}.
 
 \subsection{Anwendungs-Entry: \texttt{src/main.c}}
 Das kleine C-Programm demonstriert direkte Nutzung eines LiteX-generierten CSR-APIs. Es inkludiert \texttt{generated/csr.h} -- diese Header wird von LiteX erzeugt und enthält Register-/Zugriffs-Makros/-Funktionen für die SoC-Peripherie.
 
-Code (aus \texttt{src/main.c}):
-\begin{lstlisting}[language=C,frame=single]
-// src/main.c
-
-#include <generated/csr.h>
-
-int main(void) {
-    while (1) {
-        leds_out_write(0xAA);
-        for(int i = 0; i < 1000000; i++);
-        leds_out_write(0x55);
-        for(int i = 0; i < 1000000; i++);
-    }
-    return 0;
-}
-\end{lstlisting}
+Code (aus \texttt{src/main.c}) $\rightarrow$ ~\ref{PIO:main.c}.
 
 Erläuterung:
 \begin{itemize}
@@ -586,35 +414,7 @@ Erläuterung:
 \subsection{Linker-Skript: \texttt{linker.ld}}
 Das Linker-Skript nutzt LiteX-generierte Definitionsdateien, um Adresse/Größe des SRAMs (und ggf. anderer Regionen) zu benutzen. Es legt alle Segment-Aliase auf SRAM fest, damit die Firmware komplett im RAM liegt.
 
-Auszug:
-\begin{verbatim}
-/* linker.ld - SRAM-resident firmware for muTau-RV32-SoC */
-
-/* Use LiteX-generated memory layout and output format. */
-INCLUDE generated/regions.ld
-INCLUDE generated/output_format.ld
-
-/* Use sram (defined in regions.ld) for everything */
-REGION_ALIAS("REGION_TEXT", sram);
-REGION_ALIAS("REGION_RODATA", sram);
-REGION_ALIAS("REGION_DATA", sram);
-REGION_ALIAS("REGION_BSS", sram);
-REGION_ALIAS("REGION_STACK", sram);
-
-SECTIONS
-{
-    .text :
-    {
-        _ftext = .;
-        KEEP(*(.init))
-        *(.text .text.*)
-        KEEP(*(.fini))
-        _etext = .;
-    } > REGION_TEXT
-
-    ... (data, bss, stack) ...
-}
-\end{verbatim}
+Auszug $\rightarrow$ ~\ref{PIO:linker}
 
 Wirkung:
 \begin{itemize}
@@ -705,11 +505,215 @@ Dort können die Projekte einzeln eingesehen oder als ZIP-Dateien heruntergelade
 % -------------------------------------------------
 \appendix
 \chapter{Anhang}
-\section{Abbildungen}
-Hier kommen Schaltpläne, Diagramme oder Screenshots hinein.
+\section{Linker Script}
+\label{PIO:linker}
+\begin{verbatim}
+/* linker.ld - SRAM-resident firmware for muTau-RV32-SoC */
 
-\section{Fotos / Videoclips}
-Optionaler visueller Teil.
+/* Use LiteX-generated memory layout and output format. */
+INCLUDE generated/regions.ld
+INCLUDE generated/output_format.ld
+
+/* Use sram (defined in regions.ld) for everything */
+REGION_ALIAS("REGION_TEXT", sram);
+REGION_ALIAS("REGION_RODATA", sram);
+REGION_ALIAS("REGION_DATA", sram);
+REGION_ALIAS("REGION_BSS", sram);
+REGION_ALIAS("REGION_STACK", sram);
+
+SECTIONS
+{
+    .text :
+    {
+        _ftext = .;
+        KEEP(*(.init))
+        *(.text .text.*)
+        KEEP(*(.fini))
+        _etext = .;
+    } > REGION_TEXT
+
+    ... (data, bss, stack) ...
+}
+\end{verbatim}
+
+\section{main.c}
+\label{PIO:main.c}
+\begin{lstlisting}[language=C,frame=single]
+// src/main.c
+
+#include <generated/csr.h>
+
+int main(void) {
+    while (1) {
+        leds_out_write(0xAA);
+        for(int i = 0; i < 1000000; i++);
+        leds_out_write(0x55);
+        for(int i = 0; i < 1000000; i++);
+    }
+    return 0;
+}
+\end{lstlisting}
+
+\section{crt0.S}
+\label{PIO:crt0}
+\begin{verbatim}
+/* src/crt0.S - Minimal startup code for VexRiscv on LiteX */
+
+.section .init, "ax"
+.global _start
+
+_start:
+    /* Set stack pointer to top of SRAM (0x10000000 + 0x2000 = 0x10002000) */
+    li sp, 0x10002000
+
+    /* Clear the BSS segment */
+    la t0, _fbss
+    la t1, _ebss
+bss_loop:
+    bgeu t0, t1, bss_done
+    sw zero, 0(t0)
+    addi t0, t0, 4
+    j bss_loop
+bss_done:
+
+    /* Copy data section from ROM to RAM if needed (optional for SRAM-only) */
+    la t0, _fdata
+    la t1, _edata
+    la t2, _fdata  /* In SRAM-only config, data is already in place */
+data_loop:
+    bgeu t0, t1, data_done
+    lw t3, 0(t2)
+    sw t3, 0(t0)
+    addi t0, t0, 4
+    addi t2, t2, 4
+    j data_loop
+data_done:
+
+    /* Call main */
+    call main
+
+halt:
+    j halt
+\end{verbatim}
+
+\section{load csr}
+\label{PIO:csr}
+\begin{lstlisting}[language=Python,frame=single]
+# soc/builder.py
+from litex.soc.integration.builder import Builder
+
+def build_soc(config: SoCConfig, build=False, flash=False, load=False):
+    soc = BaseSoC(config)
+    builder = Builder(soc, output_dir=config.output_path, csr_csv=f"{config.output_path}/csr.csv")
+
+    if build:
+        builder.build()
+    if flash:
+        prog = soc.platform.create_programmer()
+        bitstream = builder.get_bitstream_filename(mode="flash", ext=".fs")
+        prog.flash(0, bitstream)
+        bios = builder.get_bios_filename()
+        prog.flash(0x40000, bios, external=True)
+    if load:
+        prog = soc.platform.create_programmer()
+        bitstream = builder.get_bitstream_filename(mode="sram")
+        prog.load_bitstream(bitstream)
+    return builder
+
+def main():
+    # Argumentparsing: --board, --build, --flash, --load, ...
+    # Erstellt SoCConfig und ruft build_soc auf
+\end{lstlisting}
+
+\section{kernlogik}
+\label{PIO:kernlogik}
+\begin{lstlisting}[language=Python,frame=single]
+# soc/clocking.py
+from litex.soc.cores.clock.gowin_gw1n import GW1NPLL
+class ClockDomainGenerator(LiteXModule):
+    def __init__(self, platform, sys_clk_freq, input_clk_name="clk27", input_clk_freq=27e6):
+        self.rst = Signal()
+        self.cd_sys = ClockDomain()
+        clk_in    = platform.request(input_clk_name)
+        reset_btn = platform.request("user_btn", 0)
+
+        if hasattr(platform, "devicename"):
+            self._create_gowin_pll(platform, clk_in, reset_btn, input_clk_freq, sys_clk_freq)
+        else:
+            raise NotImplementedError(...)
+
+    def _create_gowin_pll(self, platform, clk_in, reset_btn, input_freq, output_freq):
+        dev = platform.devicename
+        if dev.startswith("GW1N") or dev.startswith("GW1NR"):
+            self.pll = GW1NPLL(devicename=platform.devicename, device=platform.device)
+            self.comb += self.pll.reset.eq(~reset_btn)
+            self.pll.register_clkin(clk_in, input_freq)
+            self.pll.create_clkout(self.cd_sys, output_freq)
+        else:
+            self.comb += self.cd_sys.clk.eq(clk_in)
+            self.comb += self.cd_sys.rst.eq(~reset_btn)
+\end{lstlisting}
+
+
+\section{BaseSoC}
+\label{PIO:basesoc}
+\begin{lstlisting}[language=Python,frame=single]
+# soc/base.py
+from litex.soc.integration.soc_core import SoCCore
+class BaseSoC(SoCCore):
+    def __init__(self, config):
+        self.soc_config = config
+        board = get_board(config.board_name)
+        platform = board.create_platform()
+
+        self.crg = ClockDomainGenerator(
+            platform=platform,
+            sys_clk_freq=config.sys_clk_freq,
+            input_clk_name=getattr(board, "input_clk_name", platform.default_clk_name),
+            input_clk_freq=getattr(board, "input_clk_freq", config.sys_clk_freq),
+        )
+
+        SoCCore.__init__(
+            self,
+            platform,
+            config.sys_clk_freq,
+            cpu_type=config.cpu_type,
+            cpu_variant=config.cpu_variant,
+            cpu_reset_address=config.cpu_reset_address,
+            integrated_rom_size=config.integrated_rom_size,
+            integrated_sram_size=config.integrated_sram_size,
+            ident=f"RISC-V SoC on {board.name}",
+            ident_version=True,
+        )
+
+        if not self.integrated_main_ram_size and config.with_external_ram:
+            board.add_main_memory(self, platform, config)
+
+        board.add_peripherals(self, platform, config)
+\end{lstlisting}
+
+\section{soconfig}
+\label{soconfig}
+\begin{lstlisting}[language=Python,frame=single]
+# soc/config.py
+from dataclasses import dataclass
+@dataclass
+class SoCConfig:
+    board_name: str = "tang_nano_9k"
+    sys_clk_freq: float = 27e6
+    with_external_ram: bool = True
+    integrated_rom_size: int = 128 * 1024
+    integrated_sram_size: int = 8 * 1024
+    external_ram_size: int = 4 * 1024 * 1024
+    cpu_type: str = "vexriscv"
+    cpu_variant: str = "standard"
+    build_name: str = "soc"
+    output_dir: str = "build"
+    # ...
+    @property
+    def output_path(self):
+        return f"{self.output_dir}/{self.board_name}"
+\end{lstlisting}
 
 % -------------------------------------------------
 % Quellenverzeichnis
