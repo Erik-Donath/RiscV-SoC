@@ -16,12 +16,34 @@
 \usepackage{array}
 \usepackage{pgfplotstable}
 
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red},
+    numberstyle=\tiny\color{gray},
+    numbers=left,
+    frame=single,
+    breaklines=true,
+    tabsize=4,
+    escapeinside={(*@}{@*)},
+    % Sprachen definieren (nicht im einzelnen lstlisting überschreiben)
+    language=C          % Default: C-Code
+}
+
+
+
 \pgfplotsset{compat=1.18}
 
 \usepackage{lmodern} % ersetzt Arial (Arial ist nicht frei verfügbar)
 \renewcommand{\familydefault}{\sfdefault} % Sans Serif (ähnlich Arial)
 \usepackage[nottoc,numbib]{tocbibind}
-\usepackage{biblatex}
+\usepackage[backend=biber, style=alphabetic, sorting=nty, language=ngerman]{biblatex}
+\addbibresource{literatur.bib}  % Ersetzen Sie "IhreDatei.bib" durch Ihren Dateinamen (ohne .bib!)
+
 
 % --- BibTeX Datei ---
 \addbibresource{literatur.bib}
@@ -59,43 +81,45 @@
 % 1 Einführung
 % -------------------------------------------------
 \chapter{Einführung}
+\section{Vorwort}
+Vorab möchten wir uns bei Frau Engel entschuldigen. Wir wussten, dass die Dokumentation maximal 15 Seiten lang sein sollte. Doch bei unserem umfangreichen Projekt, das deutlich aus dem Ruder gelaufen ist und am Ende ein enormes Maß an Komplexität erreicht hat, war es schlicht nicht mehr möglich, alles, was passiert ist, sowie die vollständige Logik innerhalb von 15 Seiten unterzubringen.  
+Wir hoffen dennoch, dass alle, die dies lesen, ihren Spaß haben und vielleicht etwas lernen.  
+Dies ist eine Dokumentation voller Verzweiflung und Hoffnung.
+
+\section{Eidesstattliche Erklärung}
+Hiermit versichere ich an Eides statt, dass ich die vorliegende Dokumentation selbstständig erstellt habe. Der Inhalt stammt ausschließlich von mir, und es wurden keine anderen als die angegebenen Quellen und Hilfsmittel verwendet. Dieses Dokument wurde lediglich durch eine KI zur Korrektur (z.\,B. Grammatik und Stil) gelesen; der gesamte Inhalt basiert jedoch allein auf meiner eigenen Arbeit.  
+Alle wörtlichen und sinngemäßen Zitate sind gekennzeichnet, und die gedruckte sowie die elektronische Version stimmen überein. Mir ist bekannt, dass falsche Angaben strafrechtliche Konsequenzen nach \S~156 StGB haben können.
+
 \section{Einleitung}
-Das Ziel unseres Projektes war es, einen RISC-V RV32I für den Tang-Nano-9k zu implementieren. Die HDL (Hardware Description Language) der Wahl war VHDL, da sie robuster und typsicherer ist als Verilog.
+Das Ziel unseres Projekts war es, einen RISC-V RV32I für den Tang Nano 9K zu implementieren. Die HDL (Hardware Description Language) unserer Wahl war VHDL, da sie robuster und typsicherer ist als Verilog.\\
+Vorab dieses Projekt mussten wir jedoch aufgeben, nachdem wir nach zwei Wochen erkannt hatten, wie aufwändig es tatsächlich ist. In dieser Zeit hätten wir es nicht geschafft, ein Ergebnis zu erzielen, das sowohl praktisch vorzeigbar gewesen wäre als auch unseren eigenen Ansprüchen genügt hätte.\\
+Also entschieden wir uns, das Projekt zu vereinfachen, indem wir ein Framework nutzten, das uns viel Arbeit abnahm. Statt alles manuell zu schreiben, mussten wir nur noch definieren, was wir haben wollten, ergänzt um etwas Logik. Dieses Framework übersetzte unseren Code anschließend automatisch in Verilog.
 
 \section{Projektumfeld}
-Das Projekt hat im Rahmen des IT-Unterrichts im Unterrichtsfeld Prozessautomatisierung stattgefunden. Es wurde sowohl in der Schule als auch im privaten Umfeld aktiv daran gearbeitet.
+Das Projekt fand im Rahmen des IT-Unterrichts im Unterrichtsfeld Prozessautomatisierung statt. Es wurde sowohl in der Schule als auch im privaten Umfeld aktiv daran gearbeitet.
 
 % -------------------------------------------------
 % 2 Analyse
 % -------------------------------------------------
 \chapter{Analyse}
 \section{Zielsetzung / Produktskizze}
-
 Die gesteckten Projektziele waren in zwei Hauptkriterien unterteilt.  
-Das erste Kriterium bestand in der Entwicklung eines funktionsfähigen System-on-Chip (SoC) auf Basis der RISC-V-Architektur (RV32I). Der entwickelte SoC sollte in der Lage sein, eigenständig Software auszuführen, ähnlich wie ein Mikrocontroller beispielsweise auf einem Arduino-System. Ziel war es, Programme direkt auf dem SoC auszuführen und über dessen GPIO-Pins externe Hardwarekomponenten, wie LEDs oder Sensoren, ansteuern und auslesen zu können. Damit sollte eine einfache Schnittstelle zwischen Software und Hardware gewährleistet werden.\\
+Das erste Kriterium bestand in der Entwicklung eines funktionsfähigen System-on-Chip (SoC) auf Basis der RISC-V-Architektur (RV32I). Der entwickelte SoC sollte in der Lage sein, eigenständig Software auszuführen, ähnlich wie ein Mikrocontroller, beispielsweise auf einem Arduino-System. Ziel war es, Programme direkt auf dem SoC auszuführen und über dessen GPIO-Pins externe Hardwarekomponenten, wie LEDs oder Sensoren, anzusteuern und auszulesen. Damit sollte eine einfache Schnittstelle zwischen Software und Hardware gewährleistet werden.\\
 
-Auf architektonischer Ebene war vorgesehen, dass der Prozessor grundlegende CPU-Komponenten enthält, die die effiziente Ausführung von Programmen ermöglichen. Dazu zählen eine Pipeline-Architektur für parallele Befehlsverarbeitung, ein Interrupt-Handling-System sowie optionale Module wie eine Multiply-Divide Unit (für RV32IM-Erweiterungen), eine Floating-Point Unit (FPU) für Gleitkommaoperationen und ein Timer-Subsystem. Darüber hinaus sollte das SoC-Design über eine klar definierte Speicherhierarchie verfügen — bestehend aus einem Instruction- und Data-Memory-Bereich sowie einem Bus-System zur Anbindung externer Peripherie.  
-Zusätzlich sollen Taktgenerierung und Reset-Logik modular realisiert sein, beispielsweise durch die Nutzung von MMCMs (Mixed-Mode Clock Manager), um verschiedene Taktfrequenzen für CPU-Kern und Peripherie bereitstellen zu können. \\
+Auf architektonischer Ebene war vorgesehen, dass der Prozessor grundlegende CPU-Komponenten enthält, die die effiziente Ausführung von Programmen ermöglichen. Dazu zählen eine Pipeline-Architektur für parallele Befehlsverarbeitung, ein Interrupt-Handling-System sowie optionale Module wie eine Multiply-Divide-Unit (für RV32IM-Erweiterungen), eine Floating-Point-Unit (FPU) für Gleitkommaoperationen und ein Timer-Subsystem. Darüber hinaus sollte das SoC-Design über eine klar definierte Speicherhierarchie verfügen – bestehend aus einem Instruction und einem Data-Memory-Bereich sowie einem Bus-System zur Anbindung externer Peripherie.  
+Zusätzlich sollten Taktgenerierung und Reset-Logik modular realisiert sein, beispielsweise durch die Nutzung von MMCMs (Mixed-Mode Clock Manager), um verschiedene Taktfrequenzen für CPU-Kern und Peripherie bereitzustellen.\\
 
 Das zweite Hauptkriterium bezog sich auf die physische Implementierung: Der entwickelte SoC sollte nach erfolgreicher Simulation auch auf realer Hardware lauffähig sein. Konkret sollte der Chip auf dem gewählten FPGA-Board Tang Nano 9K implementiert und getestet werden. Dies erforderte die Integration der Hardware in die LiteX-Umgebung, das Generieren der entsprechenden Bitstream-Dateien sowie die erfolgreiche Übertragung und Inbetriebnahme des SoCs auf dem FPGA.  
-Hierbei war insbesondere sicherzustellen, dass alle Funktionen wie Takterzeugung, Speicheranbindung, GPIO-Steuerung und Programm-Upload, sowohl in der Simulation als auch auf der Zielhardware konsistent funktionieren.
-
-\section{test}
-
-Das im Rahmen des Projekts entwickelte System-on-Chip (SoC) wurde vollständig auf Grundlage der vorab definierten Soll-Kriterien implementiert. Der SoC basiert auf einem 32-Bit-RISC-V-Kern (RV32I) und wurde mithilfe der LiteX-Umgebung in Kombination mit Migen realisiert. Wesentliche Komponenten wie der CPU-Kern, der ROM-Bereich für das BIOS sowie der Systembus zur Kommunikation zwischen den Modulen konnten erfolgreich integriert und validiert werden. \\
-
-Die grundlegende Funktionalität des Systems, einschließlich der Programmausführung auf dem Prozessor, wurde durch Testprogramme in C überprüft. Dazu wurden einfache C-Anwendungen kompiliert, auf den SoC geladen und über die integrierte BIOS-Schnittstelle gestartet. Die dabei beobachteten Ergebnisse bestätigten, dass der Prozessor Befehle korrekt ausführt, Speicherzugriffe ordnungsgemäß funktionieren und die Simulationsergebnisse mit dem Verhalten auf der realen FPGA-Hardware übereinstimmen. \\
-
-Der entwickelte SoC wurde erfolgreich auf dem Tang Nano 9K FPGA synthetisiert, geladen und in Betrieb genommen. Einzelne Architekturkomponenten wie der Speichercontroller und der Systembus funktionierten stabil und wie vorgesehen. Der ursprünglich geplante MMCM (Mixed-Mode Clock Manager) zur flexiblen Takterzeugung befindet sich hingegen noch in einem experimentellen Entwicklungszweig und war zum Zeitpunkt der Implementierung nicht vollständig funktionsfähig. Stattdessen wurde auf eine Standardtakterzeugung des FPGA-Boards zurückgegriffen, um den SoC zuverlässig betreiben zu können. Dadurch konnte das System mit stabilen Taktraten ausgeführt und getestet werden, wenngleich die dynamische Taktanpassung noch nicht realisiert ist. \\
-
-Die Ansteuerung der externen GPIO-Pins wurde im Design vorgesehen und auf logischer Ebene implementiert, konnte jedoch mangels funktionaler physischer Zuordnung auf dem verwendeten Tang Nano 9K bislang nur theoretisch verifiziert werden. Simulationen und der Systemaufbau deuten auf eine grundsätzlich korrekte Integration hin, eine praktische Validierung steht jedoch noch aus. \\
-
-Insgesamt wurde der überwiegende Teil der Projektziele erfolgreich erreicht. Der entwickelte RISC-V-basierte SoC ist simulations- und hardwareseitig weitgehend funktionsfähig, kann C-Code ausführen und bildet eine solide Basis für zukünftige Erweiterungen, insbesondere für die Integration eines vollständig implementierten MMCM-Systems und die physikalische Verifikation der GPIO-Schnittstellen.
-
+Hierbei war insbesondere sicherzustellen, dass alle Funktionen, wie Takterzeugung, Speicheranbindung, GPIO-Steuerung und Programm-Upload – sowohl in der Simulation als auch auf der Zielhardware konsistent funktionieren.
 
 
 \section{Begründung der Entscheidung}
-Das Projekt wurde ausgew\"ahlt aus der der intension heraus eine Herausforderung zu schaffen mit einem Projekt was eigentlich f\"ur die angesetzte Zeit und das von der Schule vermittelten wissens nicht erreichbar ist. Ein weiterer grund f\"ur diese entscheidung war die motivation das eigene wissen zu vertiefen und zu erweitern es war die wissbelgier zu verstehen wie ein microkontroller funktioniert wie einfach es ist so etwas zu entwickeln wir wollten nicht einfach wie die anderen ein Projekt auf etwas aufbauen wo wir selber nicht wissen wie es funktioniert und wie es aufgebaut ist.
+Das Projekt wurde aus der Intention heraus ausgewählt, eine echte Herausforderung zu schaffen – mit einem Vorhaben, das für die vorgesehene Zeit und das in der Schule vermittelte Wissen eigentlich nicht erreichbar war.
+\\
+Ein weiterer Grund für diese Entscheidung war die Motivation, das eigene Wissen zu vertiefen und zu erweitern. Es war die Wissbegierde, zu verstehen, wie ein Mikrocontroller funktioniert und wie aufwendig oder einfach es ist, ein solches System selbst zu entwickeln.
+\\
+Wir wollten kein Projekt umsetzen, das lediglich auf bestehenden Lösungen aufbaut, deren Funktionsweise wir selbst nicht verstehen. Stattdessen wollten wir die Grundlagen nachvollziehen und ein tieferes Verständnis dafür gewinnen, wie Hardware und Logik tatsächlich zusammenspielen.
+
 
 \section{Pflichtenheft}
 
@@ -127,7 +151,7 @@ Das FPU-Design in Abbildung~\ref{fig:fpu} zeigt eine entkoppelte Gleitkomma-Pipe
 
 Die zentrale FMA-Einheit (Fused Multiply‑Add -- kombinierte Multiplikations‑Addierer-Einheit) bildet das Herz der FPU-Pipeline und kann je nach Befehl Multiplikation, Addition oder kombinierte Operationen ausführen; vorgeschaltete Pipeline-Register erlauben hohe Taktfrequenzen bei mehreren parallel aktiven FPU-Befehlen. Weitere Blöcke implementieren Operationen wie \texttt{MIN}, \texttt{MAX}, \texttt{SGNJ} (Vorzeichenmanipulation), \texttt{F2I} (Float‑zu‑Integer‑Konvertierung) und \texttt{CMP} (Vergleich), während die Join-Logik Ergebnisse aus den unterschiedlichen Funktionspfaden zusammenführt und geordnet an die Completion-Phase weitergibt. Über das in Abbildung~\ref{fig:fpu} eingezeichnete Commit-Interface werden FPU-Ergebnisse in der Writeback-Stufe der CPU in die Integer- oder FPU-Register geschrieben; parallel aktualisiert die FPU Status- und Fehlerflags (fpuFlags) sowie Performance-Counter, die der CPU zur Auswertung zur Verfügung stehen. \\
 
-Die Instruktionsimplementierung folgt der RV32I-ISA (RISC-V Instruction Set Architecture -- Befehlssatz-Architektur) mit U-, I-, R-, S-, B- und J‑Formaten; die Dekodierung erfolgt in der Decode-Stufe der Pipeline und steuert die in den Abbildungen gezeigten Pfade für ALU, Speicherzugriffe, Branch-Logik und FPU-Anbindung. LiteX übernimmt im Hintergrund die Rolle des SoC-Baukastens und sorgt dafür, dass die in den Abbildungen dargestellten CPU- und FPU-Pipelines nahtlos in ein vollständiges System eingebettet werden, indem es Wishbone‑Schnittstellen generiert, Speicher und Peripherie an die Memory-Stufe bindet, Clock- und Reset-Netze für alle Pipeline-Register bereitstellt und den Build-Flow bis hin zum Bitstream automatisiert. \\
+Die Instruktionsimplementierung folgt der \cite{RV32i-ISA} (RISC-V Instruction Set Architecture -- Befehlssatz-Architektur) mit U-, I-, R-, S-, B- und J‑Formaten; die Dekodierung erfolgt in der Decode-Stufe der Pipeline und steuert die in den Abbildungen gezeigten Pfade für ALU, Speicherzugriffe, Branch-Logik und FPU-Anbindung. LiteX übernimmt im Hintergrund die Rolle des SoC-Baukastens und sorgt dafür, dass die in den Abbildungen dargestellten CPU- und FPU-Pipelines nahtlos in ein vollständiges System eingebettet werden, indem es Wishbone‑Schnittstellen generiert, Speicher und Peripherie an die Memory-Stufe bindet, Clock- und Reset-Netze für alle Pipeline-Register bereitstellt und den Build-Flow bis hin zum Bitstream automatisiert. \\
 
 
 
@@ -136,10 +160,12 @@ Die Instruktionsimplementierung folgt der RV32I-ISA (RISC-V Instruction Set Arch
 % -------------------------------------------------
 \chapter{Planung}
 \section{Personal}
-Das Personal bestand aus zwei arbeitern Daniel und Erik die aufgaben waren gleich aufgeteilt dardurch das es nur einen FPGA gab wurde immer nach einer zeit gewechselt die zeit die der eine den FPGA hatte durfte er an dem code arbeiten waerend der andere an der Dokumentation und an rechere gearbeitet hat das ganze wurde die ganze zeit so durchgewechslet dardurch haben bei diesem Projekt ausgewogen in beiden bereichen gearbeitet.
+Das Projektteam bestand aus zwei Mitgliedern: Daniel und Erik. Die Aufgaben waren gleichmäßig aufgeteilt.  
+Da nur ein FPGA zur Verfügung stand, wurde regelmäßig gewechselt. Während der eine am FPGA arbeitete und den Code entwickelte, kümmerte sich der andere um die Dokumentation und die Recherche.  
+Durch diesen fortlaufenden Wechsel konnten beide Teammitglieder in allen Bereichen – sowohl in der praktischen Hardwarearbeit als auch in der theoretischen Ausarbeitung – gleichmäßig Erfahrung sammeln und zum Fortschritt des Projekts beitragen.
 
 \section{Material}
-Als Material haben wir unseren FPGA(Tang Nano 9k) sowie unsere Laptops als auch ein USB-C Kabel verwendet.
+Als Material kamen der FPGA \textit{Tang Nano 9K}, unsere Laptops sowie ein USB-C-Kabel zum Einsatz.
 
 \section{Zeit}
 
@@ -175,42 +201,504 @@ Die Diagramme enthalten ausschließlich zeitlich relevante Aspekte, jedoch keine
 % 4 Durchführung
 % -------------------------------------------------
 \chapter{Durchführung}
+
 \section{Bau des Modells}
-im Bau des Modelles beziehen wir uns auf unser entprodukt nicht auf das Produkt was wir davor versucht haben zu entwickeln.
+Beim Bau des Modells beziehen wir uns auf unser Endprodukt, nicht auf das vorherige, aufgegebene Projekt.
+
 \subsection{Docker}
-Um \"Uberhaupt anfangen zu k\"onnen zu entwickeln mussten wir uns erstmal eine entwicklungsumgebung schafenn die folgende anforderungen erfuellt:
+Um überhaupt mit der Entwicklung beginnen zu können, mussten wir zunächst eine Entwicklungsumgebung schaffen, die die folgenden Anforderungen erfüllt:
 \begin{itemize}
-    \item muss Platformunabh\"angig \ reproduzierbar sein (Damit wir beide die identische entwicklungsumgebung haben)
-    \item Sie musste alle tools haben und alle tools mussten miteinander kompertibel sein (um abh\"anigkeitsfehler zu vermeiden)
-    \item f\"ur das entprodukt es sollte einfach zu bedienen sein und fehler unanf\"allig sein damit es jeder einfach verwenden kann.
+    \item Sie muss plattformunabhängig und reproduzierbar sein (damit beide dieselbe Entwicklungsumgebung nutzen können).
+    \item Alle benötigten Tools müssen enthalten und miteinander kompatibel sein (um Abhängigkeitsfehler zu vermeiden).
+    \item Für das Endprodukt soll sie einfach zu bedienen und möglichst fehlerunanfällig sein, damit sie von jedem problemlos verwendet werden kann.
 \end{itemize}
-Die Entscheidung ist uns erstmal nicht leichtgefallen wir standen zwischen \textbf{nix} oder \textbf{Docker}. Nix h\"atte die vorteile gehabt das es leichter gewesen w\"are und schneller zu bauen das Hauptargument wesegen sich dagegenentschieden worden ist war das es viele programme der toolchain einfach nicht als nix package gab. Deswegen wurde sich dann f\"ur eine Kombination aus Docker und Makefile entschieden damit man das Projekt mit einfachen CLI-Commands bauen kann ohne ein Docker Profi zu sein also haben wir ein Docker-Container geschrieben der auf debian-bookworm-light basis laeuft um uns einfach bloatware zu sparen und um den Container schneller bauen zu k\"onnen weiter haben wir dann die tools im Container installiert wie Python(haben hier eine venv umgebung gemacht) und litex als auch litex-boards so wie ein paar build dependencies damit auch alles l\"auft wie mason, ninja2 etc... als der Container Funktioniert hat wobei hier anzumerken ist das unser anfangsContainer ja noch die ganzen opensource toolchains gebaut hat pro aenderung im Container knapp 30min. gebraucht hat bis er gebaut war bzw. einen fehler ausgegeben hat und wir etwas aendern mussten um das etwas zu optimieren haben mir ein cache eingebaut und das ganze in ein 5-Stages aufgeteilt sowie mit Docker args gearbeitet um in verschiedene Stage combinationen ausfuehren zu koennen. 
-\subsection{Tool-Chain}
+Die Entscheidung fiel uns zunächst nicht leicht – wir standen zwischen \textbf{Nix} und \textbf{Docker}.  
+Nix hätte den Vorteil gehabt, schneller und einfacher zu bauen, jedoch fehlten viele Pakete der Toolchain als Nix-Pakete.  
+Daher entschieden wir uns für eine Kombination aus Docker und Makefile. So kann das Projekt mit einfachen CLI-Kommandos gebaut werden, ohne dass man Docker-Experte sein muss.  
+\\
+Wir entwickelten einen Docker-Container auf Basis von \textit{debian-bookworm-slim}, um Bloatware zu vermeiden und den Container schneller zu bauen. Innerhalb des Containers installierten wir alle benötigten Tools, darunter Python (mit einer virtuellen Umgebung), LiteX, liteX-boards sowie einige Build-Abhängigkeiten wie \texttt{meson} und \texttt{jinja2}.  
+Anfangs dauerte der Build-Prozess des Containers jedoch sehr lange – pro Änderung bis zu 30 Minuten. Um dies zu optimieren, implementierten wir ein Caching-System, teilten den Container in fünf Stages auf und nutzten Docker-Args, um verschiedene Stage-Kombinationen gezielt ausführen zu können.
+
+\subsection{Toolchain}
+Der ursprüngliche Plan war, eine Open-Source-Toolchain zu verwenden – mit \texttt{yosys} als Routing-Tool sowie \texttt{nextpnr-himbaechel} als Building-Tool für den Bitstream, in Kombination mit \texttt{apycula} und \texttt{openFPGALoader} zum Flashen des Designs.  
+\\
+Es zeigte sich jedoch schnell, dass die Open-Source-Tools nicht optimal mit den LUT-Ressourcen des Tang Nano 9K umgehen. Dadurch kam es zu fehlerhaften Synthesen, obwohl das Design grundsätzlich kompatibel war.  
+Wir entschieden uns daher für die alternative, geschlossene Toolchain \textbf{GOWIN EDA}. Das Problem dabei war jedoch, dass für die Installation persönliche Daten angegeben werden mussten – was nicht im Sinne unseres Projekts war.  
+\\
+Nach längerer Recherche und Experimenten mit der Open-Source-Toolchain analysierten wir schließlich den Download-Prozess der GOWIN-Webseite und stellten fest, dass der eigentliche Download-Link öffentlich zugänglich war.  
+Diese Schwachstelle nutzten wir, um mithilfe des CLI-Tools \texttt{curl} die Installationsdateien direkt herunterzuladen – ganz ohne Anmeldung.  
+Dieses Verfahren funktionierte erfolgreich, und wir konnten mit GOWIN EDA die ersten SoC-Tests für den Tang Nano 9K durchführen.
 
 \subsection{SoC}
+\label{PID:SoC}
+Für den SoC begaben wir uns zunächst in eine intensive Lernphase. Wir beschäftigten uns eingehend mit \textbf{LiteX} (das auf \textbf{Migen} basiert) und den internen Strukturen, um zu verstehen, wie ein solches Projekt aufgebaut ist, welche Möglichkeiten es bietet und wie wir es am sinnvollsten nutzen können.  
+\\
+Schnell stellten wir fest, dass LiteX nur sehr spärlich dokumentiert ist. Es existieren zwar Beispiele, diese sind jedoch oberflächlich, unkommentiert und bieten keine tiefere Hilfe zum Verständnis der Architektur. Außerdem waren die Beispielprojekte unstrukturiert – alles befand sich meist in einer einzigen Datei, was wir für unser Projekt vermeiden wollten.  
+\\
+Daher entwickelten wir unsere eigene, logisch aufgebaute Ordnerstruktur, die nach unserer Einschätzung übersichtlicher und wartungsfreundlicher ist (siehe \ref{PID:AHardware_S}).  
+\\
+Nachdem wir die Basis für den SoC geschaffen, diesen mit Verilator simuliert und erfolgreich getestet hatten, wagten wir den ersten vollständigen Flash-Versuch auf dem FPGA mit dem LiteX-BIOS.  
+Zunächst schien alles in Ordnung – keine Fehler wurden angezeigt. Beim Versuch, sich via serieller Verbindung mit dem FPGA zu verbinden, traten jedoch Kommunikationsfehler auf (siehe Kapitel~\ref{PID:serial}). Diese Probleme konnten wir nach einiger Zeit beheben.  
+\\
+Damit hatten wir einen voll funktionsfähigen SoC, also einen Mikrocontroller, erstellt – genau den Punkt, mit dem andere Projekte normalerweise beginnen.  
+Bald stellten wir jedoch fest, dass das Programmieren dieses SoCs komplexer war als erwartet. Gleichzeitig erkannten wir das große Potenzial des Projekts.  
+Unsere nächste Zielsetzung war daher, daraus ein vollwertiges Produkt zu machen – mit \textbf{PlatformIO}-Integration, sodass jeder den SoC leicht programmieren konnte. Außerdem wollten wir ermöglichen, ein RTOS darauf auszuführen.  
+\\
+Ab diesem Punkt war das ursprüngliche Projekt zwar abgeschlossen, doch wir wollten mehr.  
+Wir starteten zwei neue Teilprojekte:  
+1. Ein Repository mit Beispielen und Dokumentation, wie man den SoC programmiert.  
+2. Eine Integration für PlatformIO (\textit{work in progress}), da PlatformIO ein Industriestandard ist.  
+\\
+Für das RTOS entschieden wir uns für \textbf{Zephyr}~\cite{zephyr_getting_started}. Damit der SoC mit dessen Anforderungen kompatibel ist, passten wir das Design entsprechend an. Mithilfe eines kaum dokumentierten LiteX-internen Tools gelang es uns schließlich, Konfigurationsdateien für Zephyr automatisch zu generieren.  
+Ein vollwertiges Image ist derzeit noch nicht komplett fertiggestellt.  
+\\
+Darüber hinaus spezialisierten wir unseren SoC auf Signalverarbeitung.  
+Die Idee: Ein FPGA-Design arbeitet schneller als Software, die darauf ausgeführt wird. Daher integrierten wir eine FFT-(Fast~Fourier~Transform)-Bibliothek direkt in das SoC-Design.\\  
+Das Ergebnis ist ein System, das für zeitkritische Anwendungen – etwa in der Forschung – extrem geringe Latenzzeiten erreicht, nahezu vergleichbar mit einem ASIC.
 
-\subsection{Branches und reviews}
+\subsection{Serielle Verbindung}
+\label{PID:serial}
+Das Problem mit der seriellen Kommunikation war, dass wir keine Verbindung mit den gewählten Tools herstellen konnten.  
+Die Fehlersuche dauerte einige Zeit, bis wir die Ursache erkannt und das Problem behoben hatten.\\  
+Nachdem die Verbindung schließlich funktionierte, erschien beim Start das LiteX-BIOS (siehe Abbildung~\ref{fig:bios}).
 
-\subsection{serial connection}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{bios_litex.png}
+    \caption{Das BIOS, das angezeigt wird, wenn man sich via Serial verbindet und den Befehl \texttt{reboot} eingibt.}
+    \label{fig:bios}
+\end{figure}
 
-\subsection{website und Marketing}
+\subsection{Website und Marketing}
+Wie bereits erwähnt, wollten wir unser Projekt zu einem vollwertigen Produkt weiterentwickeln, das jeder einfach nutzen oder als Grundlage für eigene Vorhaben verwenden kann – mit den in Kapitel~\ref{PID:SoC} beschriebenen Features.  
+\\
+Um das Projekt bekannter zu machen und Interessierten einen Eindruck über dessen Entstehung zu vermitteln, entwickelten wir eine Website.  
+Diese gestalteten wir SEO-konform, sodass sie von Suchmaschinen wie Google leichter gefunden und auch von KI-Systemen über die bereitgestellte \texttt{sitemap.xml} erkannt und indexiert werden kann.  
+\\
+Die Website zum Projekt ist unter folgendem Link erreichbar:  
+\href{https://erik-donath.github.io/muTau-RV32-SoC/}{https://erik-donath.github.io/muTau-RV32-SoC/}.
 
-\section{Implementation}
-Erklärung des Software- oder Hardwareteils, Codebeispiele einfügen.
+
+\subsection{Git, Branches, Reviews und GitHub-Workflow}
+Um Fehler einfach korrigieren zu können und jederzeit auf den aktuellen Stand des Projekts zugreifen zu können, entschieden wir uns für \textbf{Git} als Versionsverwaltungssystem.  
+Zur Synchronisation der Projektstände, für kollaboratives Arbeiten und als Cloud-Backup verwendeten wir zusätzlich \textbf{GitHub}. Dadurch war sichergestellt, dass jederzeit eine konsistente und aktuelle Version des Projekts online verfügbar war.\\
+\\
+Durch die Nutzung von Branches hielten wir den \textit{main}-Branch stets stabil und funktionsfähig. Für jeden neuen Entwicklungsschritt oder jedes neue Feature wurde eine eigene Branch erstellt.  
+Diese Vorgehensweise verhinderte, dass experimentelle Änderungen die stabile Hauptversion beeinträchtigten, und schuf eine klare Trennung zwischen produktiver Entwicklung und neuen Funktionen.\\
+\\
+Sobald eine Feature-Branch als funktionsfähig galt, nutzten wir das GitHub-Review-System (siehe z.\,B. \href{https://github.com/Erik-Donath/muTau-RV32-SoC/pull/2#event-21522289961}{dieses Beispiel}).  
+In diesem Workflow stellte Erik jeweils einen \textit{Pull Request} mit einer Beschreibung der Änderungen, und Daniel überprüfte den Code, testete die Funktionalität und gab abschließend die Freigabe zum Merge.  
+Auf diese Weise entstand ein klar strukturiertes, nachvollziehbares und dauerhaft wartbares Projekt.  
+Zudem ermöglichte diese Arbeitsweise, dass beide Teammitglieder parallel an unterschiedlichen Bereichen arbeiten konnten, ohne dass Fortschritte verloren gingen oder Missverständnisse über den Projektstand entstanden.\\
+\\
+Um das Projekt weitgehend zu automatisieren, richteten wir zusätzlich mehrere \textbf{GitHub Actions Workflows} ein.  
+Diese führen diverse Aufgaben automatisch aus:
+\begin{itemize}
+    \item \textbf{Build:} Baut das Projekt automatisch bei jedem Commit oder Release und generiert die Bitstream-Dateien.
+    \item \textbf{Pages:} Veröffentlicht die Projektwebseite automatisch über GitHub Pages.
+    \item \textbf{CodeQL:} Führt eine statische Codeanalyse durch, um potenzielle Sicherheitslücken oder Fehler frühzeitig zu erkennen.
+\end{itemize}
+Durch diesen automatisierten Prozess können die erzeugten Bitstreams direkt als GitHub-Releases bereitgestellt werden. Dadurch müssen Nutzer, die sich nur für die fertigen FPGA-Bitstreams interessieren, das Repository nicht klonen oder selbst bauen – sie können die fertigen Builds bequem herunterladen.
+
+
+\chapter{Implementierung}
+
+\subsection{Architekturübersicht (Hardware)}
+\label{PID:AHardware_S}
+Das Projekt ist modular aufgebaut und besteht im Wesentlichen aus folgenden Teilen:
+\begin{itemize}
+  \item \textbf{boards/} -- Board-spezifische Plattformdefinitionen (Pinout, Ressourcen).
+  \item \textbf{cores/} -- Wiederverwendbare Hardware-Cores (z.\,B. HyperRAM/HyperBus).
+  \item \textbf{soc/} -- SoC-Definitionen und Builder-Logik (Python, Migen/LiteX).
+  \item \textbf{firmware/} -- Bare-Metal-Firmware-Targets (z.\,B. BIOS, einfache Beispiele).
+  \item \textbf{docs/}, \textbf{pages/} -- Dokumentation / GitHub Pages.
+  \item \textbf{docker/}, \textbf{Makefile} -- Build-Umgebung und Automatisierung.
+\end{itemize}
+
+Die Hardwarebeschreibung wird mit Migen/LiteX in Python geschrieben; daraus erzeugt der Builder die FPGA-Bitstreams (Gowin-Toolchain in diesem Projekt). Die Firmware nutzt die von LiteX generierten Header (CSR-Definitionen), um auf die Peripherie zuzugreifen.
+
+\subsection{Wichtige Softwarekomponenten}
+Im Folgenden werden die zentralen Python-Module aus \texttt{soc/} erklärt, die das System orchestrieren.
+
+\subsubsection{SoC-Konfiguration (SoCConfig)}
+Die \texttt{SoCConfig}-Dataclass fasst die build- und board-spezifischen Parameter zusammen (Boardname, Takt, RAM-Optionen, CPU-Konfiguration, Pfade). Wichtige Aspekte:
+\begin{itemize}
+  \item Standard-Board: \texttt{tang\_nano\_9k}
+  \item Sys-Clock-Default: 27\,MHz
+  \item Wahl: externe RAM-Nutzung oder SRAM-only
+  \item Output-Pfad: \texttt{build/<board>}
+\end{itemize}
+
+Beispiel (Auszug):
+\begin{lstlisting}[language=Python,frame=single]
+# soc/config.py
+from dataclasses import dataclass
+@dataclass
+class SoCConfig:
+    board_name: str = "tang_nano_9k"
+    sys_clk_freq: float = 27e6
+    with_external_ram: bool = True
+    integrated_rom_size: int = 128 * 1024
+    integrated_sram_size: int = 8 * 1024
+    external_ram_size: int = 4 * 1024 * 1024
+    cpu_type: str = "vexriscv"
+    cpu_variant: str = "standard"
+    build_name: str = "soc"
+    output_dir: str = "build"
+    # ...
+    @property
+    def output_path(self):
+        return f"{self.output_dir}/{self.board_name}"
+\end{lstlisting}
+
+\subsubsection{Basis-SoC (BaseSoC)}
+\texttt{BaseSoC} (erbt von \texttt{litex.soc.integration.soc\_core.SoCCore}) setzt das SoC zusammen:
+\begin{itemize}
+  \item Initialisiert Clock-/Reset-Generator (CRG).
+  \item Wählt CPU-Typ und -Variante (z.\,B. VexRiscv).
+  \item Fügt Main Memory hinzu (falls extern nutzbar).
+  \item Lässt das Board proprietäre Peripherie hinzufügen (GPIOs, UART, LEDs, etc.).
+\end{itemize}
+
+Ausschnitt:
+\begin{lstlisting}[language=Python,frame=single]
+# soc/base.py
+from litex.soc.integration.soc_core import SoCCore
+class BaseSoC(SoCCore):
+    def __init__(self, config):
+        self.soc_config = config
+        board = get_board(config.board_name)
+        platform = board.create_platform()
+
+        self.crg = ClockDomainGenerator(
+            platform=platform,
+            sys_clk_freq=config.sys_clk_freq,
+            input_clk_name=getattr(board, "input_clk_name", platform.default_clk_name),
+            input_clk_freq=getattr(board, "input_clk_freq", config.sys_clk_freq),
+        )
+
+        SoCCore.__init__(
+            self,
+            platform,
+            config.sys_clk_freq,
+            cpu_type=config.cpu_type,
+            cpu_variant=config.cpu_variant,
+            cpu_reset_address=config.cpu_reset_address,
+            integrated_rom_size=config.integrated_rom_size,
+            integrated_sram_size=config.integrated_sram_size,
+            ident=f"RISC-V SoC on {board.name}",
+            ident_version=True,
+        )
+
+        if not self.integrated_main_ram_size and config.with_external_ram:
+            board.add_main_memory(self, platform, config)
+
+        board.add_peripherals(self, platform, config)
+\end{lstlisting}
+
+\subsubsection{Clocking / CRG}
+Die Clock- und Reset-Logik ist in \texttt{soc/clocking.py} implementiert. Für Gowin GW1N/GW1NR Devices wird ein GW1N-PLL genutzt, ansonsten ein einfacher Pass-Through (sofern die Eingangsfrequenz der Ziel-Frequenz entspricht).
+
+Beispiel (Kernlogik):
+\begin{lstlisting}[language=Python,frame=single]
+# soc/clocking.py
+from litex.soc.cores.clock.gowin_gw1n import GW1NPLL
+class ClockDomainGenerator(LiteXModule):
+    def __init__(self, platform, sys_clk_freq, input_clk_name="clk27", input_clk_freq=27e6):
+        self.rst = Signal()
+        self.cd_sys = ClockDomain()
+        clk_in    = platform.request(input_clk_name)
+        reset_btn = platform.request("user_btn", 0)
+
+        if hasattr(platform, "devicename"):
+            self._create_gowin_pll(platform, clk_in, reset_btn, input_clk_freq, sys_clk_freq)
+        else:
+            raise NotImplementedError(...)
+
+    def _create_gowin_pll(self, platform, clk_in, reset_btn, input_freq, output_freq):
+        dev = platform.devicename
+        if dev.startswith("GW1N") or dev.startswith("GW1NR"):
+            self.pll = GW1NPLL(devicename=platform.devicename, device=platform.device)
+            self.comb += self.pll.reset.eq(~reset_btn)
+            self.pll.register_clkin(clk_in, input_freq)
+            self.pll.create_clkout(self.cd_sys, output_freq)
+        else:
+            self.comb += self.cd_sys.clk.eq(clk_in)
+            self.comb += self.cd_sys.rst.eq(~reset_btn)
+\end{lstlisting}
+
+\subsubsection{Builder / Build-Flow}
+Der Build-Entry-Point ist \texttt{soc/builder.py}. Er erzeugt ein \texttt{BaseSoC}-Objekt, bindet LiteX's \texttt{Builder} ein und bietet Optionen zum Bauen, Flashen und Laden (SRAM):
+
+Wesentliche Funktionen:
+\begin{itemize}
+  \item \texttt{builder.build()} erzeugt den FPGA-Bitstream (Gowin-Tooling).
+  \item \texttt{prog.flash(...)} und \texttt{prog.load\_bitstream(...)} zum Flashen bzw. Laden.
+  \item Ausgabe der CSR-Map (\texttt{csr.csv}) in den Output-Ordner.
+\end{itemize}
+
+Ausschnitt:
+\begin{lstlisting}[language=Python,frame=single]
+# soc/builder.py
+from litex.soc.integration.builder import Builder
+
+def build_soc(config: SoCConfig, build=False, flash=False, load=False):
+    soc = BaseSoC(config)
+    builder = Builder(soc, output_dir=config.output_path, csr_csv=f"{config.output_path}/csr.csv")
+
+    if build:
+        builder.build()
+    if flash:
+        prog = soc.platform.create_programmer()
+        bitstream = builder.get_bitstream_filename(mode="flash", ext=".fs")
+        prog.flash(0, bitstream)
+        bios = builder.get_bios_filename()
+        prog.flash(0x40000, bios, external=True)
+    if load:
+        prog = soc.platform.create_programmer()
+        bitstream = builder.get_bitstream_filename(mode="sram")
+        prog.load_bitstream(bitstream)
+    return builder
+
+def main():
+    # Argumentparsing: --board, --build, --flash, --load, ...
+    # Erstellt SoCConfig und ruft build_soc auf
+\end{lstlisting}
+
+\subsection{Firmware / Software-Interaktion}
+LiteX generiert beim SoC-Build Header- und Linker-Dateien (unter \texttt{build/<board>/software/include/generated}). Diese enthalten CSR-Definitionen (Control and Status Registers) und Regions-Definitionen (z.\,B. \texttt{regions.ld}), die Firmware benötigt:
+\begin{itemize}
+  \item \texttt{generated/csr.h}: Helper-Funktionen / Makros zum Lesen/Schreiben von Peripherie-Registers (z.\,B. LEDs, UART).
+  \item \texttt{generated/regions.ld}: Memory-Map (SRAM, Flash) für den Linker.
+  \item \texttt{variables.mak}: enthält CFLAGS, LDFLAGS, LIBS für Firmware-Build (wird von Firmware-Build-Skripten gelesen).
+\end{itemize}
+
+Der typische Firmware-Start besteht aus:
+\begin{enumerate}
+  \item Start-up-Assembly (crt0) initialisiert Stack, BSS, ggf. kopiert .data.
+  \item \texttt{main()} benutzt die LiteX-generierten CSR-APIs, um Peripherie zu steuern.
+  \item Firmware wird als BIOS oder als Kernel über SerialBoot/Flash geladen.
+\end{enumerate}
+
+\subsection{Beispiel: minimale Firmware (aus dem Baseline-Repository)}
+Eine typische Demo-Firmware toggelt LEDs über die CSR-API:
+\begin{lstlisting}[language=C,frame=single]
+#include <generated/csr.h>
+
+int main(void) {
+    while (1) {
+        leds_out_write(0xAA);
+        for(int i = 0; i < 1000000; i++); // Busy-wait
+        leds_out_write(0x55);
+        for(int i = 0; i < 1000000; i++);
+    }
+    return 0;
+}
+\end{lstlisting}
+
+\bigskip
+\subsubsection{Architekturübersicht (Software)}
+Die Firmware ist ein kleines Bare-Metal-Programm für einen RV32-Kern (VexRiscv über LiteX). Die wichtige Idee:
+\begin{enumerate}
+  \item LiteX (in \texttt{soc/}) erzeugt Board-/SoC-spezifische Header und Linker-Regionen (unter \texttt{software/include/generated}).
+  \item Das Firmware-Projekt kompiliert gegen diese generierten Header (CSR-Definitionen, Adressen).
+  \item Die Startsequenz (crt0.S) richtet die Laufzeitumgebung ein (Stack, BSS, .data).
+  \item \texttt{main.c} verwendet die generierten CSR-Access-Funktionen (z.B. \texttt{leds\_out\_write}) um die Hardware zu steuern.
+  \item Linker-Skript (\texttt{linker.ld}) sorgt dafür, dass alle Segmente im SRAM liegen (keine externe Flash-Nutzung).
+\end{enumerate}
+
+\subsubsection{Start-Up: \texttt{src/crt0.S}}
+Wesentliche Aufgaben:
+\begin{itemize}
+  \item Stackpointer initialisieren (typischer Stack-Top: SRAM-Start + Offset).
+  \item BSS-Bereich mit Nullen füllen.
+  \item Optional .data von ROM nach RAM kopieren (für SRAM-only Konfiguration evtl. bereits korrekt).
+  \item \texttt{main} aufrufen; falls \texttt{main} zurückkehrt, Endlosschleife.
+\end{itemize}
+
+Beispiel (aus \texttt{src/crt0.S}):\begin{verbatim}
+/* src/crt0.S - Minimal startup code for VexRiscv on LiteX */
+
+.section .init, "ax"
+.global _start
+
+_start:
+    /* Set stack pointer to top of SRAM (0x10000000 + 0x2000 = 0x10002000) */
+    li sp, 0x10002000
+
+    /* Clear the BSS segment */
+    la t0, _fbss
+    la t1, _ebss
+bss_loop:
+    bgeu t0, t1, bss_done
+    sw zero, 0(t0)
+    addi t0, t0, 4
+    j bss_loop
+bss_done:
+
+    /* Copy data section from ROM to RAM if needed (optional for SRAM-only) */
+    la t0, _fdata
+    la t1, _edata
+    la t2, _fdata  /* In SRAM-only config, data is already in place */
+data_loop:
+    bgeu t0, t1, data_done
+    lw t3, 0(t2)
+    sw t3, 0(t0)
+    addi t0, t0, 4
+    addi t2, t2, 4
+    j data_loop
+data_done:
+
+    /* Call main */
+    call main
+
+halt:
+    j halt
+\end{verbatim}
+
+\subsection{Anwendungs-Entry: \texttt{src/main.c}}
+Das kleine C-Programm demonstriert direkte Nutzung eines LiteX-generierten CSR-APIs. Es inkludiert \texttt{generated/csr.h} -- diese Header wird von LiteX erzeugt und enthält Register-/Zugriffs-Makros/-Funktionen für die SoC-Peripherie.
+
+Code (aus \texttt{src/main.c}):
+\begin{lstlisting}[language=C,frame=single]
+// src/main.c
+
+#include <generated/csr.h>
+
+int main(void) {
+    while (1) {
+        leds_out_write(0xAA);
+        for(int i = 0; i < 1000000; i++);
+        leds_out_write(0x55);
+        for(int i = 0; i < 1000000; i++);
+    }
+    return 0;
+}
+\end{lstlisting}
+
+Erläuterung:
+\begin{itemize}
+  \item \texttt{generated/csr.h} definiert Funktionen wie \texttt{leds\_out\_write(uint32\_t)} zum Schreiben in die LED-Register (per LiteX generiert).
+  \item Die Endlosschleife wechselt LED-Muster mit einfachen Software-Delays.
+  \item In einem echten Projekt würden hier zusätzlich Initialisierung, Interrupt-Setup oder Peripheriebehandlung stattfinden.
+\end{itemize}
+
+\subsection{Linker-Skript: \texttt{linker.ld}}
+Das Linker-Skript nutzt LiteX-generierte Definitionsdateien, um Adresse/Größe des SRAMs (und ggf. anderer Regionen) zu benutzen. Es legt alle Segment-Aliase auf SRAM fest, damit die Firmware komplett im RAM liegt.
+
+Auszug:
+\begin{verbatim}
+/* linker.ld - SRAM-resident firmware for muTau-RV32-SoC */
+
+/* Use LiteX-generated memory layout and output format. */
+INCLUDE generated/regions.ld
+INCLUDE generated/output_format.ld
+
+/* Use sram (defined in regions.ld) for everything */
+REGION_ALIAS("REGION_TEXT", sram);
+REGION_ALIAS("REGION_RODATA", sram);
+REGION_ALIAS("REGION_DATA", sram);
+REGION_ALIAS("REGION_BSS", sram);
+REGION_ALIAS("REGION_STACK", sram);
+
+SECTIONS
+{
+    .text :
+    {
+        _ftext = .;
+        KEEP(*(.init))
+        *(.text .text.*)
+        KEEP(*(.fini))
+        _etext = .;
+    } > REGION_TEXT
+
+    ... (data, bss, stack) ...
+}
+\end{verbatim}
+
+Wirkung:
+\begin{itemize}
+  \item Alle Abschnitte werden an Adressen gemappt, die in \texttt{generated/regions.ld} definiert sind (von LiteX bereitgestellt).
+  \item Dadurch ist ein nahtloses Zusammenspiel zwischen LiteX-Hardware-Map und Firmware möglich.
+\end{itemize}
+
+\subsection{Build-Konfiguration: \texttt{CMakeLists.txt} und Toolchain}
+Hauptaufgaben von CMake:
+\begin{itemize}
+  \item Einlesen der LiteX-Variablen (z. B. CFLAGS, LDFLAGS, LIBS) aus \texttt{variables.mak}.
+  \item Zusammensetzen der Compiler-/Linker-Flags (z. B. \texttt{-march=rv32i -mabi=ilp32}).
+  \item Einbinden des localen \texttt{linker.ld} und Verhindern von Standard-Libs (bare-metal).
+\end{itemize}
+
+Toolchain (cmake/toolchain-riscv.cmake) setzt cross-compiler Pfade:
+\begin{verbatim}[
+# cmake/toolchain-riscv.cmake
+set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_SYSTEM_PROCESSOR riscv32)
+
+set(CMAKE_C_COMPILER   /opt/riscv-toolchain/bin/riscv64-unknown-elf-gcc)
+set(CMAKE_CXX_COMPILER /opt/riscv-toolchain/bin/riscv64-unknown-elf-g++)
+...
+\end{verbatim}
+
+\subsection{Zusammenspiel mit LiteX (generated headers)}
+Wichtig ist, dass LiteX vor dem Firmware-Build ausgeführt wurde, damit die Dateien unter \texttt{LITEX\_BUILD\_DIR/software/include/generated} vorhanden sind. Diese generierten Dateien enthalten:
+\begin{itemize}
+  \item \texttt{csr.h} / andere Header mit Register-Defines und Helper-Funktionen.
+  \item \texttt{regions.ld}, \texttt{output\_format.ld}, \texttt{variables.mak} für Linker- und Build-Parameter.
+\end{itemize}
+
+
 
 \section{Test}
-Teststrategien, Ergebnisse, ggf. Benchmarks.
+Wie bereits in Abbildung~\ref{fig:SoC} dargestellt, wurden mehrere Tests durchgeführt, um die korrekte Funktionsweise des SoCs sicherzustellen.  
+Dazu zählten unter anderem einfache Schreibtests in CSRs (Control and Status Register) innerhalb der Verilatorsimulation, aber auch praktische Experimente direkt auf dem Board – etwa durch kleine Blinky-Programme, einfache Assembler-Befehle und verschiedene BIOS-Kommandos.  
 
 % -------------------------------------------------
 % 5 Projektabschluss
 % -------------------------------------------------
 \chapter{Projektabschluss}
+
 \section{Fazit}
-Bewertung der Zielerreichung und Herausforderungen.
+Das ursprüngliche Ziel des Projekts haben wir nicht vollständig erreicht. Unser Plan, einen eigenen SoC bzw. eine CPU von Grund auf in VHDL zu entwickeln, ließ sich in der vorgesehenen Zeit nicht umsetzen.  
+Wie jedoch aus dieser Dokumentation hervorgeht, war auch das alternative Projekt wesentlich umfangreicher, als zuvor angenommen. Wir haben uns anfangs deutlich überschätzt, konnten jedoch – trotz Zeitverzögerung – ein Ergebnis schaffen, das sich sehen lassen kann.  
+
+Am Ende entstand ein voll funktionsfähiges Produkt, das sich keineswegs hinter anderen Projekten verstecken muss. Mit etwas weiterer Entwicklung könnte es sogar marktreif sein, da unser SoC langfristig eine echte Alternative zu Mikrocontrollern wie Arduino oder gängigen MCUs darstellt (sobald die Integration vollständig abgeschlossen ist).  
+Darüber hinaus haben wir unser Produkt durch eine integrierte FFT-Schaltung erweitert, die für Signalverarbeitung genutzt werden kann – direkt in Hardware, ohne zusätzliche Bibliotheken.  
+
+Ebenso ist es uns gelungen, das Projekt strukturiert und im Team organisiert anzugehen, eine ausführliche Dokumentation zu erstellen und sogar eine begleitende Website zu veröffentlichen.  
+Trotz aller Erfolge müssen wir jedoch einräumen, dass wir uns mit diesem Vorhaben eindeutig übernommen haben.  
+Wir haben unzählige Stunden außerhalb der Schule daran gearbeitet – und mittlerweile fühlt sich das Projekt fast an wie unser gemeinsames „Kind“, das wir über Monate hinweg großgezogen haben. Und das alles für gerade einmal 15 Punkte in einem Nebenfach.
 
 \section{Ausblick}
-\subsection{weitere Ideen}
-Verbesserungsmöglichkeiten und mögliche Weiterentwicklung.
+
+\subsection{Weitere Ideen}
+Da unser Projekt bzw. Produkt bislang noch nicht zu 100\,\% fertiggestellt ist, wäre der erste Schritt, es vollständig abzuschließen. Anschließend gibt es jedoch zahlreiche weitere Ideen, die wir gern umsetzen würden.\\
+
+Da sich das Projekt besonders an Einsteiger und Hobbyanwender richtet, wäre ein wichtiger nächster Schritt, den Installationsprozess zu vereinfachen.  
+Aktuell erfolgt das Flashen des FPGAs, indem dieser an einen Docker-Container gemountet wird. Über diesen Container wird das Board mit einem Makefile beschrieben – ein Prozess, der für Anfänger zu komplex sein kann.  
+Eine sinnvolle Erweiterung wäre daher ein \textbf{Web-Installer}, der mittels \textbf{JTAG-WebUSB} direkt über den Browser die Bitstreams auf das FPGA lädt.\\
+
+Eine weitere Idee ist die \textbf{Erweiterung der integrierten Signalverarbeitungstools}. Neben der FFT könnten zusätzliche Filter, etwa ein \textit{Butterworth-Filter}, implementiert werden. Außerdem wäre ein weiterer SoC interessant, der sich speziell an Kryptographie-Anwendungen richtet – mit geeigneten Hardwaremodulen zur Unterstützung solcher Aufgaben.\\
+
+Darüber hinaus könnten wir ein ganz neues Produkt entwickeln – ähnlich wie ein Xilinx-SoC.  
+Dabei würden wir unser bestehendes Projekt erweitern, indem wir einen AXI-Bus an einige Pins anbinden, der zu einem weiteren FPGA führt.  
+Über den Device Tree eines RTOS könnte dieser Bus mit den CSRs verbunden werden, wodurch es möglich wäre, einen zweiten FPGA dynamisch über HDL zu konfigurieren, während er gleichzeitig vom SoC gesteuert wird.  
+Dies würde die Möglichkeiten unseres Systems erheblich erweitern.\\
+
+Auch ein weiteres lohnenswertes Ziel wäre, den SoC so anzupassen, dass darauf \textbf{Linux} lauffähig ist – was ihn zu einem kleinen, vollwertigen Einplatinencomputer machen würde.\\
+
+Zudem könnte unser aktuelles PWM-Protokoll verbessert werden, da es derzeit auf einem Workaround basiert und noch keine echte PWM-Implementierung darstellt.
+
+\section{Code}
+Da es aufgrund der Größe des Projekts und der vielen Submodule zu aufwendig wäre, den gesamten Code in eine einzelne ZIP-Datei zu packen – und dies außerdem die Speicherlimits von Moodle oder IServ überschreiten würde – stellen wir die Quellcodes stattdessen über GitHub zur Verfügung.  
+Dort können die Projekte einzeln eingesehen oder als ZIP-Dateien heruntergeladen werden.\\
+
+\href{https://github.com/Erik-Donath/muTau-Zephyr}{https://github.com/Erik-Donath/muTau-Zephyr}\\
+\href{https://github.com/Erik-Donath/muTau-RV32-SoC}{https://github.com/Erik-Donath/muTau-RV32-SoC}\\
+\href{https://github.com/Erik-Donath/muTau-Barebone}{https://github.com/Erik-Donath/muTau-Barebone}\\
+\href{https://github.com/Erik-Donath/muTau-PlatformIO}{https://github.com/Erik-Donath/muTau-PlatformIO}
+
 
 % -------------------------------------------------
 % Anhang
@@ -220,25 +708,13 @@ Verbesserungsmöglichkeiten und mögliche Weiterentwicklung.
 \section{Abbildungen}
 Hier kommen Schaltpläne, Diagramme oder Screenshots hinein.
 
-\section{Beispielquellcode}
-\begin{verbatim}
-int main(void) {
-    return 0;
-}
-\end{verbatim}
-
 \section{Fotos / Videoclips}
 Optionaler visueller Teil.
 
 % -------------------------------------------------
 % Quellenverzeichnis
 % -------------------------------------------------
-\printbibliography
-
-% -------------------------------------------------
-% Andere Daten
-% -------------------------------------------------
-\chapter{Andere Daten}
-
+\nocite{*}  % Zeigt ALLE Bib-Einträge an
+\printbibliography[title={Quellen}]
 
 \end{document}
