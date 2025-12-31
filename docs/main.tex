@@ -106,7 +106,7 @@ Das Projekt fand im Rahmen des IT-Unterrichts im Unterrichtsfeld Prozessautomati
 Die gesteckten Projektziele waren in zwei Hauptkriterien unterteilt.  
 Das erste Kriterium bestand in der Entwicklung eines funktionsfähigen System-on-Chip (SoC) auf Basis der RISC-V-Architektur (RV32I). Der entwickelte SoC sollte in der Lage sein, eigenständig Software auszuführen, ähnlich wie ein Mikrocontroller, beispielsweise auf einem Arduino-System. Ziel war es, Programme direkt auf dem SoC auszuführen und über dessen GPIO-Pins externe Hardwarekomponenten, wie LEDs oder Sensoren, anzusteuern und auszulesen. Damit sollte eine einfache Schnittstelle zwischen Software und Hardware gewährleistet werden.\\
 
-Auf architektonischer Ebene war vorgesehen, dass der Prozessor grundlegende CPU-Komponenten enthält, die die effiziente Ausführung von Programmen ermöglichen. Dazu zählen eine Pipeline-Architektur für parallele Befehlsverarbeitung, ein Interrupt-Handling-System sowie optionale Module wie eine Multiply-Divide-Unit (für RV32IM-Erweiterungen), eine Floating-Point-Unit (FPU) für Gleitkommaoperationen und ein Timer-Subsystem. Darüber hinaus sollte das SoC-Design über eine klar definierte Speicherhierarchie verfügen – bestehend aus einem Instruction und einem Data-Memory-Bereich sowie einem Bus-System zur Anbindung externer Peripherie.  
+Auf architektonischer Ebene war vorgesehen, dass der Prozessor grundlegende CPU-Komponenten enthält, die die effiziente Ausführung von Programmen ermöglichen. Dazu zählen eine Pipeline-Architektur für parallele Befehlsverarbeitung, ein Interrupt-Handling-System sowie optionale Module wie eine Multiply-Divide-Unit (für RV32IM-Erweiterungen), eine Floating-Point-Unit (FPU) für Gleitkommaoperationen und ein Timer-Subsystem. Darüber hinaus sollte das SoC-Design über eine klar definierte Speicherhierarchie verfügen, bestehend aus einem Instruction und einem Data-Memory-Bereich sowie einem Bus-System zur Anbindung externer Peripherie.  
 Zusätzlich sollten Taktgenerierung und Reset-Logik modular realisiert sein, beispielsweise durch die Nutzung von MMCMs (Mixed-Mode Clock Manager), um verschiedene Taktfrequenzen für CPU-Kern und Peripherie bereitzustellen.\\
 
 Das zweite Hauptkriterium bezog sich auf die physische Implementierung: Der entwickelte SoC sollte nach erfolgreicher Simulation auch auf realer Hardware lauffähig sein. Konkret sollte der Chip auf dem gewählten FPGA-Board Tang Nano 9K implementiert und getestet werden. Dies erforderte die Integration der Hardware in die LiteX-Umgebung, das Generieren der entsprechenden Bitstream-Dateien sowie die erfolgreiche Übertragung und Inbetriebnahme des SoCs auf dem FPGA.  
@@ -114,11 +114,11 @@ Hierbei war insbesondere sicherzustellen, dass alle Funktionen, wie Takterzeugun
 
 
 \section{Begründung der Entscheidung}
-Das Projekt wurde aus der Intention heraus ausgewählt, eine echte Herausforderung zu schaffen – mit einem Vorhaben, das für die vorgesehene Zeit und das in der Schule vermittelte Wissen eigentlich nicht erreichbar war.
+Das Projekt wurde aus der Intention heraus ausgewählt, eine echte Herausforderung zu schaffen, mit einem Vorhaben, das für die vorgesehene Zeit und das in der Schule vermittelte Wissen eigentlich nicht erreichbar war.
 \\
 Ein weiterer Grund für diese Entscheidung war die Motivation, das eigene Wissen zu vertiefen und zu erweitern. Es war die Wissbegierde, zu verstehen, wie ein Mikrocontroller funktioniert und wie aufwendig oder einfach es ist, ein solches System selbst zu entwickeln.
 \\
-Wir wollten kein Projekt umsetzen, das lediglich auf bestehenden Lösungen aufbaut, deren Funktionsweise wir selbst nicht verstehen. Stattdessen wollten wir die Grundlagen nachvollziehen und ein tieferes Verständnis dafür gewinnen, wie Hardware und Logik tatsächlich zusammenspielen.
+Wir wollten kein Projekt umsetzen, das lediglich auf bestehenden Lösungen aufbaut. Stattdessen wollten wir die Grundlagen nachvollziehen und ein tieferes Verständnis dafür gewinnen, wie Hardware und Logik tatsächlich zusammenspielen.
 
 
 \section{Pflichtenheft}
@@ -162,14 +162,15 @@ Die Instruktionsimplementierung folgt der \cite{RV32i-ISA} (RISC-V Instruction S
 \section{Personal}
 Das Projektteam bestand aus zwei Mitgliedern: Daniel und Erik. Die Aufgaben waren gleichmäßig aufgeteilt.  
 Da nur ein FPGA zur Verfügung stand, wurde regelmäßig gewechselt. Während der eine am FPGA arbeitete und den Code entwickelte, kümmerte sich der andere um die Dokumentation und die Recherche.  
-Durch diesen fortlaufenden Wechsel konnten beide Teammitglieder in allen Bereichen – sowohl in der praktischen Hardwarearbeit als auch in der theoretischen Ausarbeitung – gleichmäßig Erfahrung sammeln und zum Fortschritt des Projekts beitragen.
+Durch diesen fortlaufenden Wechsel konnten beide Teammitglieder in allen Bereichen, sowohl in der praktischen Hardwarearbeit als auch in der theoretischen Ausarbeitung, gleichmäßig Erfahrung sammeln und zum Fortschritt des Projekts beitragen.
 
 \section{Material}
 Als Material kamen der FPGA \textit{Tang Nano 9K}, unsere Laptops sowie ein USB-C-Kabel zum Einsatz.
 
 \section{Zeit}
+\label{PIO:time}
 
-Das Zeitmanagement war von Beginn an schwer einzuschätzen, da anfangs unklar war, ob wir das Projekt überhaupt in der geplanten Form umsetzen können — selbst mit der Entscheidung, nicht alles von Grund auf neu zu entwickeln. Auch zum derzeitigen Stand dieser Dokumentation (\today) hat die verfügbare Zeit bei weitem nicht ausgereicht. Wir verfügen zwar über ein funktionsfähiges SoC, jedoch ohne PlatformIO-Integration und ohne RTOS-Unterstützung. Das Projekt befindet sich weiterhin im Aufbau, und im Verlauf sind noch mehrere neue Ideen hinzugekommen, die jedoch zeitlich nicht mehr umsetzbar waren.
+Das Zeitmanagement war von Beginn an schwer einzuschätzen, da anfangs unklar war, ob wir das Projekt überhaupt in der geplanten Form umsetzen können, selbst mit der Entscheidung, nicht alles von Grund auf neu zu entwickeln. Auch zum derzeitigen Stand dieser Dokumentation (\today) hat die verfügbare Zeit bei weitem nicht ausgereicht. Wir verfügen zwar über ein funktionsfähiges SoC, jedoch ohne PlatformIO-Integration und ohne RTOS-Unterstützung. Das Projekt befindet sich weiterhin im Aufbau, und im Verlauf sind noch mehrere neue Ideen hinzugekommen, die jedoch zeitlich nicht mehr umsetzbar waren.
 
 Abbildung~\ref{fig:SoC} zeigt den zeitlichen Verlauf der Entwicklung des Basis-SoCs.
 
@@ -182,7 +183,7 @@ Abbildung~\ref{fig:SoC} zeigt den zeitlichen Verlauf der Entwicklung des Basis-S
 
 Zum Diagramm~\ref{fig:SoC} ist anzumerken, dass unser ursprünglicher Projektansatz darin bestand, den SoC komplett in VHDL von Grund auf zu entwickeln. Diese frühe Phase und die dort erzielten Fortschritte sind im gezeigten Zeitverlauf nicht mehr enthalten.
 
-Wie der Zeitleiste zu entnehmen ist, hat insbesondere das Aufsetzen des Docker-Containers unerwartet viel Zeit in Anspruch genommen, insgesamt mehr als drei Wochen(ist nicht ganz aus dem Diagramm zu entnehmen da wir am DockerContainer schon vorher gesesen haben). Nach Abschluss dieser Aufgabe traten weitere Verzögerungen auf: Unser ursprüngliches Ziel war es, den Bitstream mithilfe einer Open-Source-Toolchain zu synthetisieren, zu platzieren und zu routen. Wie sich jedoch später herausstellte, waren die verfügbaren Open-Source-Tools für unsere Anforderungen nicht ausreichend optimiert, was uns letztlich etwa zwei zusätzliche Wochen kostete. Nachdem dieses Problem behoben war, konnten wir endlich den bis dahin entwickelten Code auf der physischen Hardware testen.
+Wie der Zeitleiste zu entnehmen ist, hat insbesondere das Aufsetzen des Docker-Containers unerwartet viel Zeit in Anspruch genommen, insgesamt mehr als drei Wochen(ist nicht ganz aus dem Diagramm zu entnehmen da wir am DockerContainer schon vorher aufgesetzt haben). Nach Abschluss dieser Aufgabe traten weitere Verzögerungen auf: Unser ursprüngliches Ziel war es, den Bitstream mithilfe einer Open-Source-Toolchain zu synthetisieren, zu platzieren und zu routen. Wie sich jedoch später herausstellte, waren die verfügbaren Open-Source-Tools für unsere Anforderungen nicht ausreichend optimiert, was uns letztlich etwa zwei zusätzliche Wochen kostete. Nachdem dieses Problem behoben war, konnten wir endlich den bis dahin entwickelten Code auf der physischen Hardware testen.
 
 Während des gesamten Projekts haben wir parallel an mehreren Teilbereichen gearbeitet. Jeden Montag fand eine Gruppenbesprechung statt, in der alle Teammitglieder ihren aktuellen Stand präsentierten. Gemeinsam entschieden wir dann, welche Aufgaben weiterverfolgt oder vorerst pausiert werden sollten. Feste Zeitpläne haben wir bewusst vermieden, da sich im Verlauf oft zeigte, dass diese in der Praxis kaum realistisch waren.
 
@@ -212,41 +213,41 @@ Um überhaupt mit der Entwicklung beginnen zu können, mussten wir zunächst ein
     \item Alle benötigten Tools müssen enthalten und miteinander kompatibel sein (um Abhängigkeitsfehler zu vermeiden).
     \item Für das Endprodukt soll sie einfach zu bedienen und möglichst fehlerunanfällig sein, damit sie von jedem problemlos verwendet werden kann.
 \end{itemize}
-Die Entscheidung fiel uns zunächst nicht leicht – wir standen zwischen \textbf{Nix} und \textbf{Docker}.  
+Die Entscheidung fiel uns zunächst nicht leicht, wir standen zwischen \textbf{Nix} und \textbf{Docker}.  
 Nix hätte den Vorteil gehabt, schneller und einfacher zu bauen, jedoch fehlten viele Pakete der Toolchain als Nix-Pakete.  
-Daher entschieden wir uns für eine Kombination aus Docker und Makefile. So kann das Projekt mit einfachen CLI-Kommandos gebaut werden, ohne dass man Docker-Experte sein muss.  
+Daher entschieden wir uns für eine Kombination aus Docker und Makefile. So kann das Projekt mit einfachen CLI-Kommandos gebaut werden, ohne dass man sich mit Docker weiter besch\"aftigt haben muss.
 \\
 Wir entwickelten einen Docker-Container auf Basis von \textit{debian-bookworm-slim}, um Bloatware zu vermeiden und den Container schneller zu bauen. Innerhalb des Containers installierten wir alle benötigten Tools, darunter Python (mit einer virtuellen Umgebung), LiteX, liteX-boards sowie einige Build-Abhängigkeiten wie \texttt{meson} und \texttt{jinja2}.  
-Anfangs dauerte der Build-Prozess des Containers jedoch sehr lange – pro Änderung bis zu 30 Minuten. Um dies zu optimieren, implementierten wir ein Caching-System, teilten den Container in fünf Stages auf und nutzten Docker-Args, um verschiedene Stage-Kombinationen gezielt ausführen zu können.
+Anfangs dauerte der Build-Prozess des Containers jedoch sehr lange, pro Änderung bis zu 30 Minuten. Um dies zu optimieren, implementierten wir ein Caching-System, teilten den Container in fünf Stages auf und nutzten Docker-Args, um verschiedene Stage-Kombinationen gezielt ausführen zu können.
 
 \subsection{Toolchain}
-Der ursprüngliche Plan war, eine Open-Source-Toolchain zu verwenden – mit \texttt{yosys} als Routing-Tool sowie \texttt{nextpnr-himbaechel} als Building-Tool für den Bitstream, in Kombination mit \texttt{apycula} und \texttt{openFPGALoader} zum Flashen des Designs.  
+Der ursprüngliche Plan war, eine Open-Source-Toolchain zu verwenden ~\ref{PIO:time}, mit \texttt{yosys} als Routing-Tool sowie \texttt{nextpnr-himbaechel} als Building-Tool für den Bitstream, in Kombination mit \texttt{apycula} und \texttt{openFPGALoader} zum Flashen des Designs.  
 \\
 Es zeigte sich jedoch schnell, dass die Open-Source-Tools nicht optimal mit den LUT-Ressourcen des Tang Nano 9K umgehen. Dadurch kam es zu fehlerhaften Synthesen, obwohl das Design grundsätzlich kompatibel war.  
-Wir entschieden uns daher für die alternative, geschlossene Toolchain \textbf{GOWIN EDA}. Das Problem dabei war jedoch, dass für die Installation persönliche Daten angegeben werden mussten – was nicht im Sinne unseres Projekts war.  
+Wir entschieden uns daher für die alternative, geschlossene Toolchain \textbf{GOWIN EDA}. Das Problem dabei war jedoch, dass für die Installation persönliche Daten angegeben werden mussten, was nicht im Sinne unseres Projekts war.  
 \\
-Nach längerer Recherche und Experimenten mit der Open-Source-Toolchain analysierten wir schließlich den Download-Prozess der GOWIN-Webseite und stellten fest, dass der eigentliche Download-Link öffentlich zugänglich war.  
-Diese Schwachstelle nutzten wir, um mithilfe des CLI-Tools \texttt{curl} die Installationsdateien direkt herunterzuladen – ganz ohne Anmeldung.  
-Dieses Verfahren funktionierte erfolgreich, und wir konnten mit GOWIN EDA die ersten SoC-Tests für den Tang Nano 9K durchführen.
+Nach längerer Recherche und Experimenten mit der Open-Source-Toolchain analysierten wir schließlich den Download-Prozess der GOWIN-Webseite und stellten fest, dass der eigentliche Download-Link Statisch war.  
+Diese Schwachstelle nutzten wir, um mithilfe des CLI-Tools \texttt{curl} die Installationsdateien direkt herunterzuladen, ganz ohne Anmeldung.  
+Dieses Verfahren funktionierte erfolgreich, und wir waren gespannt mit der GOWIN EDA die ersten SoC-Tests für den Tang Nano 9K durchführen.
 
 \subsection{SoC}
 \label{PID:SoC}
 Für den SoC begaben wir uns zunächst in eine intensive Lernphase. Wir beschäftigten uns eingehend mit \textbf{LiteX} (das auf \textbf{Migen} basiert) und den internen Strukturen, um zu verstehen, wie ein solches Projekt aufgebaut ist, welche Möglichkeiten es bietet und wie wir es am sinnvollsten nutzen können.  
 \\
-Schnell stellten wir fest, dass LiteX nur sehr spärlich dokumentiert ist. Es existieren zwar Beispiele, diese sind jedoch oberflächlich, unkommentiert und bieten keine tiefere Hilfe zum Verständnis der Architektur. Außerdem waren die Beispielprojekte unstrukturiert – alles befand sich meist in einer einzigen Datei, was wir für unser Projekt vermeiden wollten.  
+Schnell stellten wir fest, dass LiteX nur sehr spärlich dokumentiert ist. Es existieren zwar Beispiele, diese sind jedoch oberflächlich, unkommentiert und bieten keine tiefere Hilfe zum Verständnis der Architektur. Außerdem waren die Beispielprojekte unstrukturiert, alles befand sich meist in einer einzigen Datei, was wir für unser Projekt vermeiden wollten.  
 \\
 Daher entwickelten wir unsere eigene, logisch aufgebaute Ordnerstruktur, die nach unserer Einschätzung übersichtlicher und wartungsfreundlicher ist (siehe \ref{PID:AHardware_S}).  
 \\
 Nachdem wir die Basis für den SoC geschaffen, diesen mit Verilator simuliert und erfolgreich getestet hatten, wagten wir den ersten vollständigen Flash-Versuch auf dem FPGA mit dem LiteX-BIOS.  
-Zunächst schien alles in Ordnung – keine Fehler wurden angezeigt. Beim Versuch, sich via serieller Verbindung mit dem FPGA zu verbinden, traten jedoch Kommunikationsfehler auf (siehe Kapitel~\ref{PID:serial}). Diese Probleme konnten wir nach einiger Zeit beheben.  
+Zunächst schien alles in Ordnung, keine Fehler wurden angezeigt. Beim Versuch, sich via serieller Verbindung mit dem FPGA zu verbinden, traten jedoch Kommunikationsfehler auf (siehe Kapitel~\ref{PID:serial}). Diese Probleme konnten wir nach einiger Zeit beheben.  
 \\
-Damit hatten wir einen voll funktionsfähigen SoC, also einen Mikrocontroller, erstellt – genau den Punkt, mit dem andere Projekte normalerweise beginnen.  
+Damit hatten wir einen voll funktionsfähigen SoC, also quasi einen Mikrocontroller, Entwickelt, genau den Punkt, mit dem andere Projekte normalerweise beginnen.  
 Bald stellten wir jedoch fest, dass das Programmieren dieses SoCs komplexer war als erwartet. Gleichzeitig erkannten wir das große Potenzial des Projekts.  
-Unsere nächste Zielsetzung war daher, daraus ein vollwertiges Produkt zu machen – mit \textbf{PlatformIO}-Integration, sodass jeder den SoC leicht programmieren konnte. Außerdem wollten wir ermöglichen, ein RTOS darauf auszuführen.  
+Unsere nächste Zielsetzung war daher, daraus ein vollwertiges Produkt zu machen, mit \textbf{PlatformIO}-Integration, sodass jeder den SoC leicht programmieren konnte. Außerdem wollten wir ermöglichen, ein RTOS darauf auszuführen, was weitere vorteile f\"ur die konsumenten bieten w\"urde.  
 \\
 Ab diesem Punkt war das ursprüngliche Projekt zwar abgeschlossen, doch wir wollten mehr.  
 Wir starteten zwei neue Teilprojekte:  
-1. Ein Repository mit Beispielen und Dokumentation, wie man den SoC programmiert.  
+1. Ein Repository mit Beispielen und Dokumentation, wie man auf dem SoC unser RTOS Installiert.  
 2. Eine Integration für PlatformIO (\textit{work in progress}), da PlatformIO ein Industriestandard ist.  
 \\
 Für das RTOS entschieden wir uns für \textbf{Zephyr}~\cite{zephyr_getting_started}. Damit der SoC mit dessen Anforderungen kompatibel ist, passten wir das Design entsprechend an. Mithilfe eines kaum dokumentierten LiteX-internen Tools gelang es uns schließlich, Konfigurationsdateien für Zephyr automatisch zu generieren.  
@@ -254,7 +255,7 @@ Ein vollwertiges Image ist derzeit noch nicht komplett fertiggestellt.
 \\
 Darüber hinaus spezialisierten wir unseren SoC auf Signalverarbeitung.  
 Die Idee: Ein FPGA-Design arbeitet schneller als Software, die darauf ausgeführt wird. Daher integrierten wir eine FFT-(Fast~Fourier~Transform)-Bibliothek direkt in das SoC-Design.\\  
-Das Ergebnis ist ein System, das für zeitkritische Anwendungen – etwa in der Forschung – extrem geringe Latenzzeiten erreicht, nahezu vergleichbar mit einem ASIC.
+Das Ergebnis ist ein System, das für zeitkritische Anwendungen, etwa in der Forschung, extrem geringe Latenzzeiten erreicht, nahezu vergleichbar mit einem ASIC.
 
 \subsection{Serielle Verbindung}
 \label{PID:serial}
@@ -264,7 +265,7 @@ Nachdem die Verbindung schließlich funktionierte, erschien beim Start das LiteX
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.6\textwidth]{bios_litex.png}
+    \includegraphics[width=0.4\textwidth]{bios_litex.png}
     \caption{Das BIOS, das angezeigt wird, wenn man sich via Serial verbindet und den Befehl \texttt{reboot} eingibt.}
     \label{fig:bios}
 \end{figure}
@@ -298,7 +299,7 @@ Diese führen diverse Aufgaben automatisch aus:
     \item \textbf{Pages:} Veröffentlicht die Projektwebseite automatisch über GitHub Pages.
     \item \textbf{CodeQL:} Führt eine statische Codeanalyse durch, um potenzielle Sicherheitslücken oder Fehler frühzeitig zu erkennen.
 \end{itemize}
-Durch diesen automatisierten Prozess können die erzeugten Bitstreams direkt als GitHub-Releases bereitgestellt werden. Dadurch müssen Nutzer, die sich nur für die fertigen FPGA-Bitstreams interessieren, das Repository nicht klonen oder selbst bauen – sie können die fertigen Builds bequem herunterladen.
+Durch diesen automatisierten Prozess können die erzeugten Bitstreams direkt als GitHub-Releases bereitgestellt werden. Dadurch müssen Nutzer, die sich nur für die fertigen FPGA-Bitstreams interessieren, das Repository nicht klonen oder selbst bauen, sie können die fertigen Builds bequem herunterladen.
 
 
 \chapter{Implementierung}
@@ -452,7 +453,7 @@ Wichtig ist, dass LiteX vor dem Firmware-Build ausgeführt wurde, damit die Date
 
 \section{Test}
 Wie bereits in Abbildung~\ref{fig:SoC} dargestellt, wurden mehrere Tests durchgeführt, um die korrekte Funktionsweise des SoCs sicherzustellen.  
-Dazu zählten unter anderem einfache Schreibtests in CSRs (Control and Status Register) innerhalb der Verilatorsimulation, aber auch praktische Experimente direkt auf dem Board – etwa durch kleine Blinky-Programme, einfache Assembler-Befehle und verschiedene BIOS-Kommandos.  
+Dazu zählten unter anderem einfache Schreibtests in CSRs (Control and Status Register) innerhalb der Verilatorsimulation, aber auch praktische Experimente direkt auf dem Board, etwa durch kleine Blinky-Programme, einfache Assembler-Befehle und verschiedene BIOS-Kommandos.  
 
 % -------------------------------------------------
 % 5 Projektabschluss
@@ -461,14 +462,14 @@ Dazu zählten unter anderem einfache Schreibtests in CSRs (Control and Status Re
 
 \section{Fazit}
 Das ursprüngliche Ziel des Projekts haben wir nicht vollständig erreicht. Unser Plan, einen eigenen SoC bzw. eine CPU von Grund auf in VHDL zu entwickeln, ließ sich in der vorgesehenen Zeit nicht umsetzen.  
-Wie jedoch aus dieser Dokumentation hervorgeht, war auch das alternative Projekt wesentlich umfangreicher, als zuvor angenommen. Wir haben uns anfangs deutlich überschätzt, konnten jedoch – trotz Zeitverzögerung – ein Ergebnis schaffen, das sich sehen lassen kann.  
+Wie jedoch aus dieser Dokumentation hervorgeht, war auch das alternative Projekt wesentlich umfangreicher, als zuvor angenommen. Wir haben uns anfangs deutlich überschätzt, konnten jedoch, trotz Zeitverzögerung – ein Ergebnis schaffen, das sich sehen lassen kann.  
 
 Am Ende entstand ein voll funktionsfähiges Produkt, das sich keineswegs hinter anderen Projekten verstecken muss. Mit etwas weiterer Entwicklung könnte es sogar marktreif sein, da unser SoC langfristig eine echte Alternative zu Mikrocontrollern wie Arduino oder gängigen MCUs darstellt (sobald die Integration vollständig abgeschlossen ist).  
-Darüber hinaus haben wir unser Produkt durch eine integrierte FFT-Schaltung erweitert, die für Signalverarbeitung genutzt werden kann – direkt in Hardware, ohne zusätzliche Bibliotheken.  
+Darüber hinaus haben wir unser Produkt durch eine integrierte FFT-Schaltung erweitert, die für Signalverarbeitung genutzt werden kann, direkt in Hardware, ohne zusätzliche Bibliotheken.  
 
 Ebenso ist es uns gelungen, das Projekt strukturiert und im Team organisiert anzugehen, eine ausführliche Dokumentation zu erstellen und sogar eine begleitende Website zu veröffentlichen.  
 Trotz aller Erfolge müssen wir jedoch einräumen, dass wir uns mit diesem Vorhaben eindeutig übernommen haben.  
-Wir haben unzählige Stunden außerhalb der Schule daran gearbeitet – und mittlerweile fühlt sich das Projekt fast an wie unser gemeinsames „Kind“, das wir über Monate hinweg großgezogen haben. Und das alles für gerade einmal 15 Punkte in einem Nebenfach.
+Wir haben unzählige Stunden außerhalb der Schule daran gearbeitet – und mittlerweile fühlt sich das Projekt fast an wie unser gemeinsames „Kind“, das wir über Monate hinweg großgezogen haben. Und das alles für gerade einmal eine Note in einem Nebenfach.
 
 \section{Ausblick}
 
@@ -476,22 +477,22 @@ Wir haben unzählige Stunden außerhalb der Schule daran gearbeitet – und mitt
 Da unser Projekt bzw. Produkt bislang noch nicht zu 100\,\% fertiggestellt ist, wäre der erste Schritt, es vollständig abzuschließen. Anschließend gibt es jedoch zahlreiche weitere Ideen, die wir gern umsetzen würden.\\
 
 Da sich das Projekt besonders an Einsteiger und Hobbyanwender richtet, wäre ein wichtiger nächster Schritt, den Installationsprozess zu vereinfachen.  
-Aktuell erfolgt das Flashen des FPGAs, indem dieser an einen Docker-Container gemountet wird. Über diesen Container wird das Board mit einem Makefile beschrieben – ein Prozess, der für Anfänger zu komplex sein kann.  
+Aktuell erfolgt das Flashen des FPGAs, indem dieser an einen Docker-Container gemountet wird. Über diesen Container wird das Board mit einem Makefile beschrieben, ein Prozess, der für Anfänger zu komplex sein kann.  
 Eine sinnvolle Erweiterung wäre daher ein \textbf{Web-Installer}, der mittels \textbf{JTAG-WebUSB} direkt über den Browser die Bitstreams auf das FPGA lädt.\\
 
-Eine weitere Idee ist die \textbf{Erweiterung der integrierten Signalverarbeitungstools}. Neben der FFT könnten zusätzliche Filter, etwa ein \textit{Butterworth-Filter}, implementiert werden. Außerdem wäre ein weiterer SoC interessant, der sich speziell an Kryptographie-Anwendungen richtet – mit geeigneten Hardwaremodulen zur Unterstützung solcher Aufgaben.\\
+Eine weitere Idee ist die \textbf{Erweiterung der integrierten Signalverarbeitungstools}. Neben der FFT könnten zusätzliche Filter, etwa ein \textit{Butterworth-Filter}, implementiert werden. Außerdem wäre ein weiterer SoC interessant, der sich speziell an Kryptographie-Anwendungen richtet, mit geeigneten Hardwaremodulen zur Unterstützung solcher Aufgaben.\\
 
-Darüber hinaus könnten wir ein ganz neues Produkt entwickeln – ähnlich wie ein Xilinx-SoC.  
+Darüber hinaus könnten wir ein ganz neues Produkt entwickeln, ähnlich wie ein Xilinx-SoC.  
 Dabei würden wir unser bestehendes Projekt erweitern, indem wir einen AXI-Bus an einige Pins anbinden, der zu einem weiteren FPGA führt.  
 Über den Device Tree eines RTOS könnte dieser Bus mit den CSRs verbunden werden, wodurch es möglich wäre, einen zweiten FPGA dynamisch über HDL zu konfigurieren, während er gleichzeitig vom SoC gesteuert wird.  
 Dies würde die Möglichkeiten unseres Systems erheblich erweitern.\\
 
-Auch ein weiteres lohnenswertes Ziel wäre, den SoC so anzupassen, dass darauf \textbf{Linux} lauffähig ist – was ihn zu einem kleinen, vollwertigen Einplatinencomputer machen würde.\\
+Auch ein weiteres lohnenswertes Ziel wäre, den SoC so anzupassen, dass darauf \textbf{Linux} lauffähig ist, was ihn zu einem kleinen, vollwertigen Einplatinencomputer machen würde.\\
 
 Zudem könnte unser aktuelles PWM-Protokoll verbessert werden, da es derzeit auf einem Workaround basiert und noch keine echte PWM-Implementierung darstellt.
 
 \section{Code}
-Da es aufgrund der Größe des Projekts und der vielen Submodule zu aufwendig wäre, den gesamten Code in eine einzelne ZIP-Datei zu packen – und dies außerdem die Speicherlimits von Moodle oder IServ überschreiten würde – stellen wir die Quellcodes stattdessen über GitHub zur Verfügung.  
+Da es aufgrund der Größe des Projekts und der vielen Submodule zu aufwendig wäre, den gesamten Code in eine einzelne ZIP-Datei zu packen, und dies außerdem die Speicherlimits von Moodle oder IServ überschreiten würde – stellen wir die Quellcodes stattdessen über GitHub zur Verfügung.  
 Dort können die Projekte einzeln eingesehen oder als ZIP-Dateien heruntergeladen werden.\\
 
 \href{https://github.com/Erik-Donath/muTau-Zephyr}{https://github.com/Erik-Donath/muTau-Zephyr}\\
